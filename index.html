@@ -17,7 +17,7 @@ h1{font-size:1.4rem;margin:4px 0 2px}
 .modes button span{color:var(--mute);font-size:.85rem}
 .modes button:hover,.opts button:hover:not(:disabled){outline:2px solid var(--acc)}
 .big{text-align:center;background:var(--acc);color:#0f172a;font-weight:700}
-.stats{display:flex;justify-content:space-between;color:var(--mute);font-size:.9rem;margin-bottom:10px}
+.stats{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;color:var(--mute);font-size:.9rem;margin-bottom:10px}
 .stats b{color:var(--ink)}
 .q{font-size:1.6rem;text-align:center;margin:12px 0 6px;font-family:"Times New Roman",Georgia,serif}
 .qlabel{text-align:center;color:var(--mute);font-size:.9rem}
@@ -127,6 +127,7 @@ function start(set, mode){
     $('tm').textContent = 60;
     S.timer = setInterval(() => { S.time--; $('tm').textContent = Math.max(0,S.time); if (S.time<=0) finish(); }, 1000);
   }
+  $('sc').textContent = 0; $('st').textContent = 0;
   show('game'); next();
 }
 
