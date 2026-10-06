@@ -140,7 +140,6 @@ function rulesTable(hl){
     `<tr class="${r.trig?'trig':''} ${r.n===hl?'hl':''}"><td>${r.n}</td><td>${D}${r.f}</td><td>= ${r.d}</td></tr>`).join('') + '</table>';
 }
 function sheet(){ $('sheet').innerHTML = rulesTable(); }
-const timed = () => S.mode==='blitz' || S.mode==='guided5';
 const guided = () => S.mode==='guided' || S.mode==='guided5';
 function toggle(id){ $(id).classList.toggle('hidden'); }
 function show(id){ ['menu','game','end'].forEach(x => $(x).classList.toggle('hidden', x!==id)); }
@@ -219,7 +218,7 @@ function answer(btn){
     S.queue.push({r, at:S.i+3});
     if (S.mode==='blitz') S.time = Math.max(0, S.time-3);
     $('fb').innerHTML = (btn ? '' : '⏰ Time’s up!<br>') + `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}<div class="mn">🧠 ${M[r.n]}</div>`
-      + (timed() ? '' : '<button class="big" id="nextBtn" onclick="next()">Next question → (10)</button>')
+      + (S.mode==='blitz' ? '' : `<button class="big" id="nextBtn" onclick="next()">Next question → (${S.mode==='guided5' ? 5 : 10})</button>`)
       // Full rule summary with the missed rule in red (guided mode highlights the on-screen table instead).
       + (S.mode==='blitz' || guided() ? '' : `<details open class="sum"><summary>All 13 rules</summary>${rulesTable(r.n)}</details>`);
     if (guided()) $('guide').innerHTML = rulesTable(r.n);
@@ -229,10 +228,10 @@ function answer(btn){
   S.i++;
   // A wrong answer waits for "next" so there is time to read the hint (blitz keeps moving).
   if (ok) setTimeout(next, 650);
-  else if (timed()) setTimeout(next, 2500);
+  else if (S.mode==='blitz') setTimeout(next, 2500);
   else {
-    // Wrong answer: move on by itself after 10 seconds, or sooner with the button.
-    S.wait = 10;
+    // Wrong answer: the question timer is stopped; move on after 10 sec (5 sec in the 5-second mode), or sooner with the button.
+    S.wait = S.mode==='guided5' ? 5 : 10;
     S.wtimer = setInterval(() => {
       S.wait--;
       if ($('nextBtn')) $('nextBtn').textContent = `Next question → (${S.wait})`;
@@ -264,7 +263,7 @@ document.addEventListener('keydown', e => {
 sheet();
 
 // Phones keep an old copy of the page for up to 10 minutes. Load the newest one if the version changed.
-const VERSION = '6';
+const VERSION = '7';
 $('ver').textContent = 'v' + VERSION;
 fetch(location.pathname + '?nc=' + Date.now(), {cache:'no-store'}).then(r => r.text()).then(t => {
   const m = t.match(/const VERSION = '(\d+)'/);
