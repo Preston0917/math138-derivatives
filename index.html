@@ -25,6 +25,7 @@ h1{font-size:1.4rem;margin:4px 0 2px}
 .opts button.ok{background:var(--ok);color:#052e16}
 .opts button.bad{background:var(--bad)}
 .fb{min-height:48px;text-align:center;font-size:.95rem;color:var(--mute);margin-top:6px}
+.mn{margin-top:10px;padding:10px 12px;border-radius:10px;background:#422006;color:#fde68a;text-align:left;font-size:.95rem;line-height:1.4}
 .fb.ok{color:var(--ok)}.fb.bad{color:#fca5a5}
 .bar{height:6px;background:var(--btn);border-radius:3px;overflow:hidden;margin-bottom:12px}
 .bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
@@ -106,6 +107,22 @@ const R = [
   {n:12, f:'sec(x)', d:'sec(x)·tan(x)', tr:['−sec(x)·tan(x)','sec²(x)','−csc(x)·cot(x)'], trig:1, tip:'sec keeps itself and adds tan: sec·tan. No minus.'},
   {n:13, f:'csc(x)', d:'−csc(x)·cot(x)', tr:['csc(x)·cot(x)','−csc²(x)','sec(x)·tan(x)'], trig:1, tip:'csc keeps itself and adds cot, and “co” means minus: −csc·cot.'},
 ];
+// Mnemonics shown after a wrong answer.
+const M = {
+  1: 'A constant is a flat line. Flat = no slope = 0.',
+  2: 'y = x climbs 1 for every 1 over. Slope = 1.',
+  3: '“Drop it down, knock it down”: drop n in front, knock the power down by 1.',
+  4: 'Rewrite as x⁻¹, then “drop it down, knock it down”: −1 drops in front, power falls to −2.',
+  5: '√x is x^½. Drop the ½, knock it to −½. The root sinks to the bottom with a 2: 1/(2√x).',
+  6: 'eˣ is the Echo function: its derivative echoes itself back.',
+  7: 'aˣ is eˣ’s cousin who pays the “ln tax”: copy aˣ, then tack on ln a.',
+  8: '“Sine Starts Straight to cos”: no co-function, so no minus.',
+  9: '“CO means COntrary”: every co-function (cos, cot, csc) flips to a minus. cos → −sin.',
+  10: '“Get a tan in two secs”: tan → sec².',
+  11: 'Co-twin trick: take tan → sec², swap each to its co- (cot → csc²), add a minus: −csc².',
+  12: '“Sec keeps itself and grabs a tan”: sec → sec·tan.',
+  13: 'Co-twin trick: take sec → sec·tan, swap each to its co- (csc·cot), add a minus: −csc·cot.',
+};
 const $ = id => document.getElementById(id);
 let S = {};
 const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
@@ -183,12 +200,15 @@ function answer(btn){
     S.missed[r.n] = (S.missed[r.n]||0)+1;
     S.queue.push({r, at:S.i+3});
     if (S.mode==='blitz') S.time = Math.max(0, S.time-3);
-    $('fb').innerHTML = `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}`;
+    $('fb').innerHTML = `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}<div class="mn">🧠 ${M[r.n]}</div>`
+      + (S.mode==='blitz' ? '' : '<button class="big" id="nextBtn" onclick="next()">Got it, next →</button>');
     $('fb').className = 'fb bad';
   }
   $('sc').textContent = S.score; $('st').textContent = S.streak;
   S.i++;
-  setTimeout(next, ok ? 650 : (S.mode==='blitz' ? 1600 : 2600));
+  // A wrong answer waits for "next" so there is time to read the hint (blitz keeps moving).
+  if (ok) setTimeout(next, 650);
+  else if (S.mode==='blitz') setTimeout(next, 2500);
 }
 
 function finish(){
@@ -207,6 +227,7 @@ function quit(){ clearInterval(S.timer); S.i = Infinity; show('menu'); }
 
 document.addEventListener('keydown', e => {
   if ($('game').classList.contains('hidden')) return;
+  if ((e.key==='Enter' || e.key===' ') && $('nextBtn')) { e.preventDefault(); return next(); }
   const k = parseInt(e.key); const b = $('opts').children[k-1];
   if (b && !S.lock) answer(b);
 });
