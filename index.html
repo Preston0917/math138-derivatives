@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Derivative Drill</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--ink:#f1f5f9;--mute:#94a3b8;--acc:#38bdf8;--ok:#22c55e;--bad:#ef4444;--btn:#334155}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center}
+.wrap{width:100%;max-width:560px;padding:20px 16px 40px}
+h1{font-size:1.4rem;margin:4px 0 2px}
+.sub{color:var(--mute);font-size:.9rem;margin-bottom:18px}
+.card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:14px}
+.modes button,.opts button,.big{display:block;width:100%;text-align:left;background:var(--btn);color:var(--ink);border:0;border-radius:12px;padding:14px 16px;margin:8px 0;font-size:1.05rem;cursor:pointer}
+.modes button b{display:block;font-size:1.05rem}
+.modes button span{color:var(--mute);font-size:.85rem}
+.modes button:hover,.opts button:hover:not(:disabled){outline:2px solid var(--acc)}
+.big{text-align:center;background:var(--acc);color:#0f172a;font-weight:700}
+.stats{display:flex;justify-content:space-between;color:var(--mute);font-size:.9rem;margin-bottom:10px}
+.stats b{color:var(--ink)}
+.q{font-size:1.6rem;text-align:center;margin:12px 0 6px;font-family:"Times New Roman",Georgia,serif}
+.qlabel{text-align:center;color:var(--mute);font-size:.9rem}
+.opts button{font-family:"Times New Roman",Georgia,serif;font-size:1.3rem;text-align:center}
+.opts button.ok{background:var(--ok);color:#052e16}
+.opts button.bad{background:var(--bad)}
+.fb{min-height:48px;text-align:center;font-size:.95rem;color:var(--mute);margin-top:6px}
+.fb.ok{color:var(--ok)}.fb.bad{color:#fca5a5}
+.bar{height:6px;background:var(--btn);border-radius:3px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+table{width:100%;border-collapse:collapse;font-family:"Times New Roman",Georgia,serif;font-size:1.1rem}
+td{padding:7px 4px;border-bottom:1px solid var(--btn)}
+td:first-child{color:var(--mute);font-family:sans-serif;font-size:.8rem;width:28px}
+tr.trig td:nth-child(2){color:var(--acc)}
+.tips{font-size:.92rem;line-height:1.5;color:var(--ink)}
+.tips li{margin-bottom:6px}
+.hidden{display:none}
+.missed{font-family:"Times New Roman",Georgia,serif;font-size:1.05rem;line-height:1.7}
+a.link{color:var(--acc);cursor:pointer;text-decoration:underline;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Derivative Drill</h1>
+  <div class="sub">Math 138: derivative rules 1–13</div>
+
+  <div id="menu">
+    <div class="card modes">
+      <button onclick="start('trig','fwd')"><b>Trig rules only (8–13)</b><span>Given f(x), pick f′(x). 15 questions.</span></button>
+      <button onclick="start('all','fwd')"><b>All 13 rules</b><span>Given f(x), pick f′(x). 20 questions.</span></button>
+      <button onclick="start('trig','rev')"><b>Reverse trig</b><span>Given f′(x), pick f(x). 15 questions.</span></button>
+      <button onclick="start('all','mix')"><b>Quiz mode: mixed</b><span>All rules, both directions. 25 questions.</span></button>
+      <button onclick="start('trig','blitz')"><b>60-second trig blitz</b><span>As many as you can. Wrong answers cost 3 sec.</span></button>
+    </div>
+    <div class="card">
+      <b>Cheat sheet</b> <a class="link" onclick="toggle('sheet')">show / hide</a>
+      <div id="sheet" class="hidden" style="margin-top:10px"></div>
+    </div>
+    <div class="card tips">
+      <b>Memory tricks</b>
+      <ul>
+        <li><b>“Co” = minus.</b> Every co-function (<b>co</b>s, <b>co</b>t, <b>c</b>s<b>c</b>) has a minus sign in its derivative.</li>
+        <li><b>Pairs:</b> tan ↔ sec², cot ↔ −csc².</li>
+        <li><b>sec → sec·tan</b>, <b>csc → −csc·cot</b>. The function keeps itself and adds its partner.</li>
+        <li>sin → cos → −sin → −cos → sin (the cycle repeats every 4 derivatives).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="game" class="hidden">
+    <div class="card">
+      <div class="stats"><span>Q <b id="qn"></b></span><span>Score <b id="sc">0</b></span><span>Streak <b id="st">0</b></span><span id="timerWrap" class="hidden">⏱ <b id="tm">60</b></span></div>
+      <div class="bar"><i id="prog" style="width:0"></i></div>
+      <div class="qlabel" id="ql"></div>
+      <div class="q" id="q"></div>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <a class="link" onclick="quit()">quit to menu</a>
+    </div>
+  </div>
+
+  <div id="end" class="hidden">
+    <div class="card">
+      <h2 id="endTitle" style="margin-top:0"></h2>
+      <div id="endBody"></div>
+      <button class="big" onclick="again()">Play again</button>
+      <button class="big" style="background:var(--btn);color:var(--ink)" onclick="quit()">Menu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const D = 'd/dx ';
+const R = [
+  {n:1, f:'k', d:'0', tr:['1','k','x'], tip:'The derivative of a constant is 0.'},
+  {n:2, f:'x', d:'1', tr:['0','x','x²/2'], tip:'d/dx of x is 1.'},
+  {n:3, f:'xⁿ', d:'n·xⁿ⁻¹', tr:['xⁿ⁻¹','n·xⁿ⁺¹','(n−1)·xⁿ'], tip:'Power rule: bring n down, subtract 1 from the power.'},
+  {n:4, f:'1/x', d:'−1/x²', tr:['1/x²','ln x','−1/x'], tip:'1/x = x⁻¹, so the power rule gives −x⁻² = −1/x².'},
+  {n:5, f:'√x', d:'1/(2√x)', tr:['2√x','1/√x','√x/2'], tip:'√x = x^½, so you get ½·x^(−½) = 1/(2√x).'},
+  {n:6, f:'eˣ', d:'eˣ', tr:['x·eˣ⁻¹','eˣ·ln x','e'], tip:'eˣ is its own derivative.'},
+  {n:7, f:'aˣ', d:'aˣ·ln a', tr:['x·aˣ⁻¹','aˣ','aˣ/ln a'], tip:'aˣ keeps itself and multiplies by ln a.'},
+  {n:8, f:'sin(x)', d:'cos(x)', tr:['−cos(x)','−sin(x)','sec(x)'], trig:1, tip:'sin → cos. Not a co-function, so no minus.'},
+  {n:9, f:'cos(x)', d:'−sin(x)', tr:['sin(x)','−cos(x)','csc(x)'], trig:1, tip:'cos is a co-function, so it gets a minus: −sin(x).'},
+  {n:10, f:'tan(x)', d:'sec²(x)', tr:['−csc²(x)','sec(x)·tan(x)','−sec²(x)'], trig:1, tip:'tan ↔ sec². No “co”, no minus.'},
+  {n:11, f:'cot(x)', d:'−csc²(x)', tr:['csc²(x)','sec²(x)','−csc(x)·cot(x)'], trig:1, tip:'cot ↔ csc², and “co” means minus: −csc²(x).'},
+  {n:12, f:'sec(x)', d:'sec(x)·tan(x)', tr:['−sec(x)·tan(x)','sec²(x)','−csc(x)·cot(x)'], trig:1, tip:'sec keeps itself and adds tan: sec·tan. No minus.'},
+  {n:13, f:'csc(x)', d:'−csc(x)·cot(x)', tr:['csc(x)·cot(x)','−csc²(x)','sec(x)·tan(x)'], trig:1, tip:'csc keeps itself and adds cot, and “co” means minus: −csc·cot.'},
+];
+const $ = id => document.getElementById(id);
+let S = {};
+const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+function sheet(){
+  $('sheet').innerHTML = '<table>' + R.map(r =>
+    `<tr class="${r.trig?'trig':''}"><td>${r.n}</td><td>${D}${r.f}</td><td>= ${r.d}</td></tr>`).join('') + '</table>';
+}
+function toggle(id){ $(id).classList.toggle('hidden'); }
+function show(id){ ['menu','game','end'].forEach(x => $(x).classList.toggle('hidden', x!==id)); }
+
+function start(set, mode){
+  const pool = R.filter(r => set==='all' || r.trig);
+  const total = mode==='blitz' ? Infinity : (mode==='mix' ? 25 : set==='trig' ? 15 : 20);
+  S = {set, mode, pool, total, i:0, score:0, streak:0, best:0, missed:{}, queue:[], last:null, lock:false, time:60};
+  clearInterval(S.timer);
+  $('timerWrap').classList.toggle('hidden', mode!=='blitz');
+  if (mode==='blitz'){
+    $('tm').textContent = 60;
+    S.timer = setInterval(() => { S.time--; $('tm').textContent = Math.max(0,S.time); if (S.time<=0) finish(); }, 1000);
+  }
+  show('game'); next();
+}
+
+function pick(){
+  // Missed rules come back after a short gap.
+  const due = S.queue.findIndex(q => q.at <= S.i);
+  if (due >= 0) return S.queue.splice(due,1)[0].r;
+  let r;
+  do { r = S.pool[Math.floor(Math.random()*S.pool.length)]; } while (S.pool.length>1 && r===S.last);
+  return r;
+}
+
+function next(){
+  if ($('game').classList.contains('hidden')) return;
+  if (S.i >= S.total) return finish();
+  S.lock = false;
+  const r = pick(); S.last = r; S.cur = r;
+  const dir = S.mode==='rev' ? 'rev' : S.mode==='mix' ? (Math.random()<.5?'rev':'fwd') : 'fwd';
+  S.dir = dir;
+  let correct, opts;
+  if (dir==='fwd'){
+    $('ql').textContent = 'Find the derivative';
+    $('q').textContent = D + r.f;
+    correct = r.d;
+    opts = [correct, ...shuffle([...r.tr]).slice(0,3)];
+  } else {
+    $('ql').textContent = 'Which function has this derivative?';
+    $('q').textContent = "f′(x) = " + r.d;
+    correct = r.f;
+    const others = shuffle(S.pool.filter(x => x!==r).map(x => x.f));
+    // Prefer trig look-alikes when the answer is trig.
+    if (r.trig) others.sort((a,b) => (R.find(x=>x.f===b).trig||0) - (R.find(x=>x.f===a).trig||0));
+    opts = [correct, ...others.slice(0,3)];
+  }
+  S.correct = correct;
+  shuffle(opts);
+  $('opts').innerHTML = opts.map((o,k) => `<button data-v="${o}" onclick="answer(this)">${o}</button>`).join('');
+  $('fb').textContent = ''; $('fb').className = 'fb';
+  $('qn').textContent = S.mode==='blitz' ? S.i+1 : `${S.i+1}/${S.total}`;
+  $('prog').style.width = S.mode==='blitz' ? '0' : (S.i/S.total*100)+'%';
+}
+
+function answer(btn){
+  if (S.lock) return; S.lock = true;
+  const r = S.cur, ok = btn.dataset.v === S.correct;
+  [...$('opts').children].forEach(b => { b.disabled = true; if (b.dataset.v===S.correct) b.classList.add('ok'); });
+  if (ok){
+    S.score++; S.streak++; S.best = Math.max(S.best,S.streak);
+    $('fb').textContent = ['Nice!','Correct!','Yes!','Got it!'][Math.floor(Math.random()*4)] + (S.streak>=3?` 🔥 ${S.streak} in a row`:'');
+    $('fb').className = 'fb ok';
+  } else {
+    btn.classList.add('bad'); S.streak = 0;
+    S.missed[r.n] = (S.missed[r.n]||0)+1;
+    S.queue.push({r, at:S.i+3});
+    if (S.mode==='blitz') S.time = Math.max(0, S.time-3);
+    $('fb').innerHTML = `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}`;
+    $('fb').className = 'fb bad';
+  }
+  $('sc').textContent = S.score; $('st').textContent = S.streak;
+  S.i++;
+  setTimeout(next, ok ? 650 : (S.mode==='blitz' ? 1600 : 2600));
+}
+
+function finish(){
+  clearInterval(S.timer); S.i = Infinity; S.lock = true;
+  const n = S.mode==='blitz' ? S.score + Object.values(S.missed).reduce((a,b)=>a+b,0) : S.total;
+  const pct = n ? Math.round(S.score/n*100) : 0;
+  $('endTitle').textContent = S.mode==='blitz' ? `${S.score} correct in 60 sec` : `${S.score}/${S.total} (${pct}%)`;
+  const miss = Object.keys(S.missed).map(Number).sort((a,b)=>a-b);
+  $('endBody').innerHTML = `<p>Best streak: <b>${S.best}</b></p>` + (miss.length
+    ? `<p>Review these:</p><div class="missed">` + miss.map(k => { const r = R.find(x=>x.n===k); return `${k}. ${D}${r.f} = <b>${r.d}</b> <span style="color:var(--mute)">(missed ${S.missed[k]}×)</span>`; }).join('<br>') + '</div>'
+    : '<p>No misses. You are ready. 🎉</p>');
+  show('end');
+}
+function again(){ start(S.set, S.mode); }
+function quit(){ clearInterval(S.timer); S.i = Infinity; show('menu'); }
+
+document.addEventListener('keydown', e => {
+  if ($('game').classList.contains('hidden')) return;
+  const k = parseInt(e.key); const b = $('opts').children[k-1];
+  if (b && !S.lock) answer(b);
+});
+sheet();
+</script>
+</body>
+</html>
