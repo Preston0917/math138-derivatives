@@ -147,7 +147,7 @@ function show(id){ ['menu','game','end'].forEach(x => $(x).classList.toggle('hid
 function start(set, mode){
   const pool = R.filter(r => set==='all' || r.trig);
   const total = mode==='blitz' ? Infinity : (mode==='mix' ? 25 : set==='trig' ? 15 : 20);
-  clearInterval(S.timer); clearInterval(S.qtimer);
+  clearInterval(S.timer); clearInterval(S.qtimer); clearInterval(S.wtimer);
   S = {set, mode, pool, total, i:0, score:0, streak:0, best:0, missed:{}, queue:[], last:null, lock:false, time:60};
   $('timerWrap').classList.toggle('hidden', mode!=='blitz' && mode!=='guided5');
   $('guide').classList.toggle('hidden', !guided());
@@ -169,6 +169,7 @@ function pick(){
 }
 
 function next(){
+  clearInterval(S.wtimer);
   if ($('game').classList.contains('hidden')) return;
   if (S.i >= S.total) return finish();
   S.lock = false;
@@ -217,7 +218,7 @@ function answer(btn){
     S.queue.push({r, at:S.i+3});
     if (S.mode==='blitz') S.time = Math.max(0, S.time-3);
     $('fb').innerHTML = (btn ? '' : '⏰ Time’s up!<br>') + `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}<div class="mn">🧠 ${M[r.n]}</div>`
-      + (S.mode==='blitz' ? '' : '<button class="big" id="nextBtn" onclick="next()">Got it, next →</button>')
+      + (S.mode==='blitz' ? '' : '<button class="big" id="nextBtn" onclick="next()">Next question → (10)</button>')
       // Full rule summary with the missed rule in red (guided mode highlights the on-screen table instead).
       + (S.mode==='blitz' || guided() ? '' : `<details open class="sum"><summary>All 13 rules</summary>${rulesTable(r.n)}</details>`);
     if (guided()) $('guide').innerHTML = rulesTable(r.n);
@@ -228,10 +229,19 @@ function answer(btn){
   // A wrong answer waits for "next" so there is time to read the hint (blitz keeps moving).
   if (ok) setTimeout(next, 650);
   else if (S.mode==='blitz') setTimeout(next, 2500);
+  else {
+    // Wrong answer: move on by itself after 10 seconds, or sooner with the button.
+    S.wait = 10;
+    S.wtimer = setInterval(() => {
+      S.wait--;
+      if ($('nextBtn')) $('nextBtn').textContent = `Next question → (${S.wait})`;
+      if (S.wait <= 0) next();
+    }, 1000);
+  }
 }
 
 function finish(){
-  clearInterval(S.timer); clearInterval(S.qtimer); S.i = Infinity; S.lock = true;
+  clearInterval(S.timer); clearInterval(S.qtimer); clearInterval(S.wtimer); S.i = Infinity; S.lock = true;
   const n = S.mode==='blitz' ? S.score + Object.values(S.missed).reduce((a,b)=>a+b,0) : S.total;
   const pct = n ? Math.round(S.score/n*100) : 0;
   $('endTitle').textContent = S.mode==='blitz' ? `${S.score} correct in 60 sec` : `${S.score}/${S.total} (${pct}%)`;
@@ -242,7 +252,7 @@ function finish(){
   show('end');
 }
 function again(){ start(S.set, S.mode); }
-function quit(){ clearInterval(S.timer); clearInterval(S.qtimer); S.i = Infinity; show('menu'); }
+function quit(){ clearInterval(S.timer); clearInterval(S.qtimer); clearInterval(S.wtimer); S.i = Infinity; show('menu'); }
 
 document.addEventListener('keydown', e => {
   if ($('game').classList.contains('hidden')) return;
