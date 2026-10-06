@@ -33,6 +33,11 @@ table{width:100%;border-collapse:collapse;font-family:"Times New Roman",Georgia,
 td{padding:7px 4px;border-bottom:1px solid var(--btn)}
 td:first-child{color:var(--mute);font-family:sans-serif;font-size:.8rem;width:28px}
 tr.trig td:nth-child(2){color:var(--acc)}
+tr.hl td{background:#7f1d1d;color:#fff !important}
+.sum{margin-top:12px;text-align:left;color:var(--ink)}
+.sum summary{cursor:pointer;color:var(--acc);margin-bottom:6px}
+#guide table,.sum table{font-size:1rem}
+#guide td,.sum td{padding:4px}
 .tips{font-size:.92rem;line-height:1.5;color:var(--ink)}
 .tips li{margin-bottom:6px}
 .hidden{display:none}
@@ -50,6 +55,8 @@ a.link{color:var(--acc);cursor:pointer;text-decoration:underline;font-size:.9rem
       <button onclick="start('trig','fwd')"><b>Trig rules only (8–13)</b><span>Given f(x), pick f′(x). 15 questions.</span></button>
       <button onclick="start('all','fwd')"><b>All 13 rules</b><span>Given f(x), pick f′(x). 20 questions.</span></button>
       <button onclick="start('trig','rev')"><b>Reverse trig</b><span>Given f′(x), pick f(x). 15 questions.</span></button>
+      <button onclick="start('all','guided')"><b>Guided practice</b><span>All rules shown on screen. Pick fast, no timer. 20 questions.</span></button>
+      <button onclick="start('all','guided5')"><b>Guided practice: 5 seconds</b><span>All rules shown. 5 seconds per question. 20 questions.</span></button>
       <button onclick="start('all','mix')"><b>Quiz mode: mixed</b><span>All rules, both directions. 25 questions.</span></button>
       <button onclick="start('trig','blitz')"><b>60-second trig blitz</b><span>As many as you can. Wrong answers cost 3 sec.</span></button>
     </div>
@@ -76,6 +83,7 @@ a.link{color:var(--acc);cursor:pointer;text-decoration:underline;font-size:.9rem
       <div class="q" id="q"></div>
       <div class="opts" id="opts"></div>
       <div class="fb" id="fb"></div>
+      <div id="guide" class="hidden" style="margin-top:12px"></div>
       <a class="link" onclick="quit()">quit to menu</a>
     </div>
   </div>
@@ -127,19 +135,22 @@ const $ = id => document.getElementById(id);
 let S = {};
 const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 
-function sheet(){
-  $('sheet').innerHTML = '<table>' + R.map(r =>
-    `<tr class="${r.trig?'trig':''}"><td>${r.n}</td><td>${D}${r.f}</td><td>= ${r.d}</td></tr>`).join('') + '</table>';
+function rulesTable(hl){
+  return '<table>' + R.map(r =>
+    `<tr class="${r.trig?'trig':''} ${r.n===hl?'hl':''}"><td>${r.n}</td><td>${D}${r.f}</td><td>= ${r.d}</td></tr>`).join('') + '</table>';
 }
+function sheet(){ $('sheet').innerHTML = rulesTable(); }
+const guided = () => S.mode==='guided' || S.mode==='guided5';
 function toggle(id){ $(id).classList.toggle('hidden'); }
 function show(id){ ['menu','game','end'].forEach(x => $(x).classList.toggle('hidden', x!==id)); }
 
 function start(set, mode){
   const pool = R.filter(r => set==='all' || r.trig);
   const total = mode==='blitz' ? Infinity : (mode==='mix' ? 25 : set==='trig' ? 15 : 20);
+  clearInterval(S.timer); clearInterval(S.qtimer);
   S = {set, mode, pool, total, i:0, score:0, streak:0, best:0, missed:{}, queue:[], last:null, lock:false, time:60};
-  clearInterval(S.timer);
-  $('timerWrap').classList.toggle('hidden', mode!=='blitz');
+  $('timerWrap').classList.toggle('hidden', mode!=='blitz' && mode!=='guided5');
+  $('guide').classList.toggle('hidden', !guided());
   if (mode==='blitz'){
     $('tm').textContent = 60;
     S.timer = setInterval(() => { S.time--; $('tm').textContent = Math.max(0,S.time); if (S.time<=0) finish(); }, 1000);
@@ -183,25 +194,33 @@ function next(){
   shuffle(opts);
   $('opts').innerHTML = opts.map((o,k) => `<button data-v="${o}" onclick="answer(this)">${o}</button>`).join('');
   $('fb').textContent = ''; $('fb').className = 'fb';
+  if (guided()) $('guide').innerHTML = rulesTable();
+  if (S.mode==='guided5'){
+    clearInterval(S.qtimer); S.qt = 5; $('tm').textContent = 5;
+    S.qtimer = setInterval(() => { S.qt--; $('tm').textContent = S.qt; if (S.qt<=0) answer(null); }, 1000);
+  }
   $('qn').textContent = S.mode==='blitz' ? S.i+1 : `${S.i+1}/${S.total}`;
   $('prog').style.width = S.mode==='blitz' ? '0' : (S.i/S.total*100)+'%';
 }
 
 function answer(btn){
-  if (S.lock) return; S.lock = true;
-  const r = S.cur, ok = btn.dataset.v === S.correct;
+  if (S.lock) return; S.lock = true; clearInterval(S.qtimer);
+  const r = S.cur, ok = !!btn && btn.dataset.v === S.correct;
   [...$('opts').children].forEach(b => { b.disabled = true; if (b.dataset.v===S.correct) b.classList.add('ok'); });
   if (ok){
     S.score++; S.streak++; S.best = Math.max(S.best,S.streak);
     $('fb').textContent = ['Nice!','Correct!','Yes!','Got it!'][Math.floor(Math.random()*4)] + (S.streak>=3?` 🔥 ${S.streak} in a row`:'');
     $('fb').className = 'fb ok';
   } else {
-    btn.classList.add('bad'); S.streak = 0;
+    if (btn) btn.classList.add('bad'); S.streak = 0;
     S.missed[r.n] = (S.missed[r.n]||0)+1;
     S.queue.push({r, at:S.i+3});
     if (S.mode==='blitz') S.time = Math.max(0, S.time-3);
-    $('fb').innerHTML = `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}<div class="mn">🧠 ${M[r.n]}</div>`
-      + (S.mode==='blitz' ? '' : '<button class="big" id="nextBtn" onclick="next()">Got it, next →</button>');
+    $('fb').innerHTML = (btn ? '' : '⏰ Time’s up!<br>') + `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}<div class="mn">🧠 ${M[r.n]}</div>`
+      + (S.mode==='blitz' ? '' : '<button class="big" id="nextBtn" onclick="next()">Got it, next →</button>')
+      // Full rule summary with the missed rule in red (guided mode highlights the on-screen table instead).
+      + (S.mode==='blitz' || guided() ? '' : `<details open class="sum"><summary>All 13 rules</summary>${rulesTable(r.n)}</details>`);
+    if (guided()) $('guide').innerHTML = rulesTable(r.n);
     $('fb').className = 'fb bad';
   }
   $('sc').textContent = S.score; $('st').textContent = S.streak;
@@ -212,7 +231,7 @@ function answer(btn){
 }
 
 function finish(){
-  clearInterval(S.timer); S.i = Infinity; S.lock = true;
+  clearInterval(S.timer); clearInterval(S.qtimer); S.i = Infinity; S.lock = true;
   const n = S.mode==='blitz' ? S.score + Object.values(S.missed).reduce((a,b)=>a+b,0) : S.total;
   const pct = n ? Math.round(S.score/n*100) : 0;
   $('endTitle').textContent = S.mode==='blitz' ? `${S.score} correct in 60 sec` : `${S.score}/${S.total} (${pct}%)`;
@@ -223,7 +242,7 @@ function finish(){
   show('end');
 }
 function again(){ start(S.set, S.mode); }
-function quit(){ clearInterval(S.timer); S.i = Infinity; show('menu'); }
+function quit(){ clearInterval(S.timer); clearInterval(S.qtimer); S.i = Infinity; show('menu'); }
 
 document.addEventListener('keydown', e => {
   if ($('game').classList.contains('hidden')) return;
