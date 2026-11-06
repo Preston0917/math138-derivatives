@@ -10,27 +10,38 @@
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center}
 .wrap{width:100%;max-width:560px;padding:20px 16px 40px}
 h1{font-size:1.4rem;margin:4px 0 2px}
-.sub{color:var(--mute);font-size:.9rem;margin-bottom:18px}
+.sub{color:var(--mute);font-size:.9rem;margin-bottom:14px}
 .card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:14px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tabs button{background:var(--btn);color:var(--ink);border:0;border-radius:999px;padding:8px 12px;font-size:.88rem;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#0f172a;font-weight:700}
+.secTitle{font-size:1.15rem;font-weight:700}
+.secSub{color:var(--mute);font-size:.88rem;margin:2px 0 6px}
 .modes button,.opts button,.big{display:block;width:100%;text-align:left;background:var(--btn);color:var(--ink);border:0;border-radius:12px;padding:14px 16px;margin:8px 0;font-size:1.05rem;cursor:pointer}
 .modes button b{display:block;font-size:1.05rem}
 .modes button span{color:var(--mute);font-size:.85rem}
+.modes button .best{float:right;color:var(--ok);font-size:.8rem;font-weight:700}
 .modes button:hover,.opts button:hover:not(:disabled){outline:2px solid var(--acc)}
 .big{text-align:center;background:var(--acc);color:#0f172a;font-weight:700}
 .stats{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;color:var(--mute);font-size:.9rem;margin-bottom:10px}
 .stats b{color:var(--ink)}
 .q{font-size:1.6rem;text-align:center;margin:12px 0 6px;font-family:"Times New Roman",Georgia,serif}
+.q.long{font-size:1.2rem;line-height:1.4}
 .qlabel{text-align:center;color:var(--mute);font-size:.9rem}
 .opts button{font-family:"Times New Roman",Georgia,serif;font-size:1.3rem;text-align:center}
+.opts button.long{font-size:1.05rem;line-height:1.35}
 .opts button.ok{background:var(--ok);color:#052e16}
 .opts button.bad{background:var(--bad)}
 .fb{min-height:48px;text-align:center;font-size:.95rem;color:var(--mute);margin-top:6px}
+.why{margin-bottom:6px;color:var(--ink)}
 .mn{margin-top:10px;padding:10px 12px;border-radius:10px;background:#422006;color:#fde68a;text-align:left;font-size:.95rem;line-height:1.4}
 .fb.ok{color:var(--ok)}.fb.bad{color:#fca5a5}
 .bar{height:6px;background:var(--btn);border-radius:3px;overflow:hidden;margin-bottom:12px}
 .bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.tbl{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-family:"Times New Roman",Georgia,serif;font-size:1.1rem}
 td{white-space:nowrap;padding:7px 4px;border-bottom:1px solid var(--btn)}
+td.full{white-space:normal}
 td:first-child{color:var(--mute);font-family:sans-serif;font-size:.8rem;width:28px}
 tr.trig td:nth-child(2){color:var(--acc)}
 tr.hl td{background:#7f1d1d;color:#fff !important}
@@ -48,31 +59,39 @@ a.link{color:var(--acc);cursor:pointer;text-decoration:underline;font-size:.9rem
 <body>
 <div class="wrap">
   <h1>Derivative Drill</h1>
-  <div class="sub">Math 138: derivative rules 1–13 · <span id="ver"></span></div>
+  <div class="sub">Math 138: rules 1–13 and Sections 3.4–4.2 · <span id="ver"></span></div>
 
   <div id="menu">
-    <div class="card modes">
-      <button onclick="start('trig','fwd')"><b>Trig rules only (8–13)</b><span>Given f(x), pick f′(x). 15 questions.</span></button>
-      <button onclick="start('all','fwd')"><b>All 13 rules</b><span>Given f(x), pick f′(x). 20 questions.</span></button>
-      <button onclick="start('trig','rev')"><b>Reverse trig</b><span>Given f′(x), pick f(x). 15 questions.</span></button>
-      <button onclick="start('all','guided')"><b>Guided practice</b><span>All rules shown on screen. Pick fast, no timer. 20 questions.</span></button>
-      <button onclick="start('all','guided5')"><b>Guided practice: 5 seconds</b><span>All rules shown. 5 seconds per question. 20 questions.</span></button>
-      <button onclick="start('all','mix')"><b>Quiz mode: mixed</b><span>All rules, both directions. 25 questions.</span></button>
-      <button onclick="start('trig','blitz')"><b>60-second trig blitz</b><span>As many as you can. Wrong answers cost 3 sec.</span></button>
+    <div class="tabs" id="tabs"></div>
+
+    <div id="basicMenu">
+      <div class="card modes">
+        <div class="secTitle">Basic rules 1–13</div>
+        <div class="secSub">Sections 3.1–3.3: powers, exponentials, trig</div>
+        <button onclick="start('basic','fwd',{trig:1,total:15})"><b>Trig rules only (8–13)</b><span>Given f(x), pick f′(x). 15 questions.</span></button>
+        <button onclick="start('basic','fwd',{total:20})"><b>All 13 rules</b><span>Given f(x), pick f′(x). 20 questions.</span></button>
+        <button onclick="start('basic','rev',{trig:1,total:15})"><b>Reverse trig</b><span>Given f′(x), pick f(x). 15 questions.</span></button>
+        <button onclick="start('basic','guided',{total:20})"><b>Guided practice</b><span>All rules shown on screen. Pick fast, no timer. 20 questions.</span></button>
+        <button onclick="start('basic','guided5',{total:20})"><b>Guided practice: 5 seconds</b><span>All rules shown. 5 seconds per question. 20 questions.</span></button>
+        <button onclick="start('basic','mix',{total:25})"><b>Quiz mode: mixed</b><span>All rules, both directions. 25 questions.</span></button>
+        <button onclick="start('basic','blitz',{trig:1})"><b>60-second trig blitz</b><span>As many as you can. Wrong answers cost 3 sec.</span></button>
+      </div>
+      <div class="card">
+        <b>Cheat sheet</b> <a class="link" onclick="toggle('sheet')">show / hide</a>
+        <div id="sheet" class="hidden tbl" style="margin-top:10px"></div>
+      </div>
+      <div class="card tips">
+        <b>Memory tricks</b>
+        <ul>
+          <li><b>“Co” = minus.</b> Every co-function (<b>co</b>s, <b>co</b>t, <b>c</b>s<b>c</b>) has a minus sign in its derivative.</li>
+          <li><b>Pairs:</b> tan ↔ sec², cot ↔ −csc².</li>
+          <li><b>sec → sec·tan</b>, <b>csc → −csc·cot</b>. The function keeps itself and adds its partner.</li>
+          <li>sin → cos → −sin → −cos → sin (the cycle repeats every 4 derivatives).</li>
+        </ul>
+      </div>
     </div>
-    <div class="card">
-      <b>Cheat sheet</b> <a class="link" onclick="toggle('sheet')">show / hide</a>
-      <div id="sheet" class="hidden" style="margin-top:10px"></div>
-    </div>
-    <div class="card tips">
-      <b>Memory tricks</b>
-      <ul>
-        <li><b>“Co” = minus.</b> Every co-function (<b>co</b>s, <b>co</b>t, <b>c</b>s<b>c</b>) has a minus sign in its derivative.</li>
-        <li><b>Pairs:</b> tan ↔ sec², cot ↔ −csc².</li>
-        <li><b>sec → sec·tan</b>, <b>csc → −csc·cot</b>. The function keeps itself and adds its partner.</li>
-        <li>sin → cos → −sin → −cos → sin (the cycle repeats every 4 derivatives).</li>
-      </ul>
-    </div>
+
+    <div id="secMenu" class="hidden"></div>
   </div>
 
   <div id="game" class="hidden">
@@ -83,7 +102,7 @@ a.link{color:var(--acc);cursor:pointer;text-decoration:underline;font-size:.9rem
       <div class="q" id="q"></div>
       <div class="opts" id="opts"></div>
       <div class="fb" id="fb"></div>
-      <div id="guide" class="hidden" style="margin-top:12px"></div>
+      <div id="guide" class="hidden tbl" style="margin-top:12px"></div>
       <a class="link" onclick="quit()">quit to menu</a>
     </div>
   </div>
@@ -100,6 +119,36 @@ a.link{color:var(--acc);cursor:pointer;text-decoration:underline;font-size:.9rem
 
 <script>
 const D = 'd/dx ';
+const WAIT = 10; // seconds to read the hint after a miss in a timed mode (the clock stops)
+
+// ---------- small helpers ----------
+const $ = id => document.getElementById(id);
+const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const ri = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pk = a => a[Math.floor(Math.random()*a.length)];
+const SUP = {0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹','-':'⁻'};
+const SUB = {0:'₀',1:'₁',2:'₂',3:'₃',4:'₄',5:'₅',6:'₆',7:'₇',8:'₈',9:'₉'};
+const sup = n => String(n).split('').map(c => SUP[c]).join('');
+const sub = n => String(n).split('').map(c => SUB[c]).join('');
+const pw = p => p===1 ? '' : sup(p);                       // power, with 1 left off
+const xp = (p, v='x') => p===0 ? '' : v + pw(p);           // x, x², x³ …
+const num = n => n<0 ? '−'+Math.abs(n) : String(n);
+const cf = (k, s) => k===1 ? s : k===-1 ? '−'+s : num(k)+s;  // k times s
+const gcd = (a,b) => b ? gcd(b, a%b) : Math.abs(a);
+function frac(n, d){ if (d<0){n=-n;d=-d;} const g = gcd(n,d)||1; n/=g; d/=g; return d===1 ? num(n) : (n<0?'−':'') + Math.abs(n) + '/' + d; }
+function fracPi(n, d){ const g = gcd(n,d)||1; n/=g; d/=g; return d===1 ? `${n}/π` : `${n}/(${d}π)`; }
+function poly(ts, v='x'){
+  let s = '';
+  ts.filter(([c]) => c!==0).forEach(([c,p],i) => {
+    const a = Math.abs(c), body = p===0 ? String(a) : (a===1?'':a) + xp(p, v);
+    s += i===0 ? (c<0?'−':'') + body : (c<0?' − ':' + ') + body;
+  });
+  return s || '0';
+}
+const round2 = x => Math.round(x*100)/100;
+
+// ---------- basic rules 1–13 (Sections 3.1–3.3) ----------
 const R = [
   {n:1, f:'k', d:'0', tr:['1','k','x'], tip:'The derivative of a constant is 0.'},
   {n:2, f:'x', d:'1', tr:['0','x','x²/2'], tip:'d/dx of x is 1.'},
@@ -131,128 +180,468 @@ const M = {
   12: '“Sec keeps itself and grabs a tan”: sec → sec·tan.',
   13: 'Co-twin trick: take sec → sec·tan, swap each to its co- (csc·cot), add a minus: −csc·cot.',
 };
-const $ = id => document.getElementById(id);
-let S = {};
-const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+R.forEach(r => r.mn = M[r.n]);
 
-function rulesTable(hl){
-  return '<table>' + R.map(r =>
-    `<tr class="${r.trig?'trig':''} ${r.n===hl?'hl':''}"><td>${r.n}</td><td>${D}${r.f}</td><td>= ${r.d}</td></tr>`).join('') + '</table>';
+// ---------- Section levels ----------
+// A rule with no "pre" is a derivative rule, shown as "d/dx f = d".
+// A rule with pre:'' is a fact, shown as "f = d" (or "f d" with sep:' ').
+const S34 = {
+  rules: [
+    {n:1, f:'f(g(x))', d:'f′(g(x))·g′(x)', tr:['f′(g′(x))','f′(x)·g′(x)','f′(g(x))'], tip:'Chain Rule: the derivative of the outer function at the inner function, times the derivative of the inner function.', mn:'“Outside, then inside.” Peel the onion: differentiate the outer layer, leave the inside alone, then multiply by the inside’s derivative.'},
+    {n:2, pre:'', f:'dy/dx', d:'(dy/du)·(du/dx)', tr:['(dy/du)/(du/dx)','(du/dy)·(dx/du)','dy/du + du/dx'], tip:'Leibniz form of the Chain Rule, with y = f(u) and u = g(x).', mn:'The du’s “cancel” like fractions: (dy/du)·(du/dx) → dy/dx.'},
+    {n:3, f:'[g(x)]ⁿ', d:'n[g(x)]ⁿ⁻¹·g′(x)', tr:['n[g(x)]ⁿ⁻¹','n[g′(x)]ⁿ⁻¹','[g(x)]ⁿ⁻¹·g′(x)'], tip:'Power Rule combined with the Chain Rule: Power Rule on the outside, then times the inside’s derivative.', mn:'“Drop it, knock it, chain it”: n in front, power minus 1, times g′(x).'},
+    {n:4, f:'eᵘ', d:'eᵘ·u′', tr:['eᵘ','u·eᵘ⁻¹','e^(u′)'], tip:'eᵘ echoes itself, then multiply by the inside’s derivative u′.', mn:'Echo, then chain: copy eᵘ, multiply by u′.'},
+    {n:5, f:'aᵘ', d:'aᵘ·ln a·u′', tr:['aᵘ·u′','u·aᵘ⁻¹·u′','aᵘ·u′/ln a'], tip:'Copy aᵘ, multiply by ln a, then multiply by u′.', mn:'Echo, ln tax, chain: aᵘ → aᵘ·ln a·u′.'},
+    {n:6, f:'sin u', d:'cos u·u′', tr:['cos u','−cos u·u′','cos(u′)'], tip:'The sin rule, then times u′.', mn:'Same trig rule as before, plus a “× u′” tag.'},
+    {n:7, f:'cos u', d:'−sin u·u′', tr:['sin u·u′','−sin u','−sin(u′)'], tip:'The cos rule (with its minus), then times u′.', mn:'“Co” = minus, and the chain adds “× u′”.'},
+    {n:8, f:'tan u', d:'sec²u·u′', tr:['sec²u','sec u·tan u·u′','−csc²u·u′'], tip:'The tan rule, then times u′.', mn:'“Tan in two secs”, plus a “× u′” tag.'},
+    {n:9, f:'√u', d:'u′/(2√u)', tr:['1/(2√u)','2√u·u′','u′/√u'], tip:'√u = u^½. Power Rule gives 1/(2√u), then times u′.', mn:'Root rule, then put u′ on top: u′/(2√u).'},
+  ],
+  probs: [
+    () => { const a=ri(2,5), b=ri(1,7), n=ri(3,6), g=`${a}x + ${b}`;
+      return {q:`d/dx (${g})${sup(n)}`, a:`${n*a}(${g})${sup(n-1)}`, w:[`${n}(${g})${sup(n-1)}`, `${n*a}(${g})${sup(n)}`, `${n*a}x(${g})${sup(n-1)}`], n:3,
+        why:`Outer: u${sup(n)} → ${n}u${sup(n-1)}. Inner: ${g} → ${a}. Multiply: ${n}·${a} = ${n*a}.`}; },
+    () => { const k=ri(2,9);
+      return {q:`d/dx sin(${k}x)`, a:`${k}cos(${k}x)`, w:[`cos(${k}x)`, `−${k}cos(${k}x)`, `${k}cos(x)`], n:6, why:`Outer: sin u → cos u. Inner: ${k}x → ${k}.`}; },
+    () => { const n=ri(2,5), g=xp(n), dg=cf(n, xp(n-1));
+      return {q:`d/dx cos(${g})`, a:`−${dg}·sin(${g})`, w:[`−sin(${g})`, `${dg}·sin(${g})`, `−sin(${dg})`], n:7, why:`Outer: cos u → −sin u. Inner: ${g} → ${dg}.`}; },
+    () => { const k=ri(2,6), E=`e${sup(k)}ˣ`;
+      return {q:`d/dx ${E}`, a:`${k}${E}`, w:[E, `${k}x·${E}`, `${E}/${k}`], n:4, why:`Outer: eᵘ → eᵘ. Inner: ${k}x → ${k}.`}; },
+    () => { const n=ri(2,4), E=`eˣ${sup(n)}`, dg=cf(n, xp(n-1));
+      return {q:`d/dx ${E}`, a:`${dg}·${E}`, w:[E, `${xp(n)}·${E}`, `${dg}·eˣ`], n:4, why:`Outer: eᵘ → eᵘ. Inner: ${xp(n)} → ${dg}.`}; },
+    () => { const n=ri(2,5);
+      return {q:`d/dx sin${sup(n)}(x)`, a:`${n}sin${pw(n-1)}(x)·cos(x)`, w:[`${n}sin${pw(n-1)}(x)`, `${n}cos${pw(n-1)}(x)`, `cos${sup(n)}(x)`], n:3,
+        why:`sin${sup(n)}(x) means [sin(x)]${sup(n)}. Outer: u${sup(n)} → ${n}u${pw(n-1)}. Inner: sin(x) → cos(x).`}; },
+    () => { const a=pk([3,5,7]), b=ri(1,9), g=`${a}x + ${b}`;
+      return {q:`d/dx √(${g})`, a:`${a}/(2√(${g}))`, w:[`1/(2√(${g}))`, `${a}/√(${g})`, `${2*a}√(${g})`], n:9, why:`Outer: √u → 1/(2√u). Inner: ${g} → ${a}.`}; },
+    () => { const k=ri(2,9);
+      return {q:`d/dx tan(${k}x)`, a:`${k}sec²(${k}x)`, w:[`sec²(${k}x)`, `${k}sec(${k}x)tan(${k}x)`, `−${k}csc²(${k}x)`], n:8, why:`Outer: tan u → sec²u. Inner: ${k}x → ${k}.`}; },
+    () => { const b=pk([2,3,5,10]), k=ri(2,5), B=`${b}${sup(k)}ˣ`;
+      return {q:`d/dx ${B}`, a:`${k}·${B}·ln ${b}`, w:[`${B}·ln ${b}`, `${k}·${B}`, `${k}·${B}/ln ${b}`], n:5, why:`Outer: aᵘ → aᵘ·ln a. Inner: ${k}x → ${k}.`}; },
+    () => { const L = [['sin(x³)','sin u','x³'],['(x² + 1)⁵','u⁵','x² + 1'],['e^(cos x)','eᵘ','cos x'],['√(4x − 1)','√u','4x − 1'],['tan²(x)','u²','tan(x)'],['cos(eˣ)','cos u','eˣ']];
+      const [e,o,i] = pk(L), others = shuffle(L.filter(x => x[0]!==e));
+      return Math.random() < .5
+        ? {label:'Which is the inner function u = g(x)?', q:`y = ${e}`, a:i, w:[...others.slice(0,2).map(x=>x[2]), e], n:1, why:`Outer: ${o}. Inner: u = ${i}.`}
+        : {label:'Which is the outer function f(u)?', q:`y = ${e}`, a:o, w:others.map(x=>x[1]), n:1, why:`Outer: ${o}. Inner: u = ${i}.`}; },
+  ],
+  tips: ['<b>“Outside, then inside.”</b> Differentiate the outer function, keep the inside the same, then multiply by the inside’s derivative.',
+    'Every basic rule gets a <b>“× u′” tag</b> when the input is u instead of x.',
+    '<b>sin²x</b> means (sin x)². The outer function is the square.',
+    'Find the inner function first: it is the part “inside” the parentheses, the root, or the exponent.'],
+};
+
+const S35 = {
+  rules: [
+    {n:1, f:'y', d:'y′', tr:['1','0','y'], tip:'y is a function of x, so its derivative is y′ (dy/dx).', mn:'y is not x. When you differentiate y, write y′.'},
+    {n:2, f:'y²', d:'2y·y′', tr:['2y','2x·y′','(y′)²'], tip:'Chain Rule: y is the inner function, so multiply by y′.', mn:'Every y you touch leaves a y′ “tag” behind.'},
+    {n:3, f:'yⁿ', d:'n·yⁿ⁻¹·y′', tr:['n·yⁿ⁻¹','n·xⁿ⁻¹·y′','yⁿ⁻¹·y′'], tip:'Power Rule on y, then times y′.', mn:'“Drop it, knock it, tag it”: n·yⁿ⁻¹, then y′.'},
+    {n:4, f:'(xy)', d:'x·y′ + y', tr:['y′','x·y′','1·y′'], tip:'Product Rule: x·(y)′ + y·(x)′ = x·y′ + y.', mn:'x times y = Product Rule. The x gets y′, the y gets 1.'},
+    {n:5, f:'sin y', d:'cos y·y′', tr:['cos y','−cos y·y′','cos(y′)'], tip:'The sin rule, then times y′.', mn:'Same trig rule, plus the y′ tag.'},
+    {n:6, f:'eʸ', d:'eʸ·y′', tr:['eʸ','y·eʸ⁻¹','x·eʸ'], tip:'eʸ echoes itself, then times y′.', mn:'Echo, then tag: eʸ·y′.'},
+    {n:7, pre:'', f:'x² + y² = r² ⇒ y′', d:'−x/y', tr:['x/y','−y/x','2x + 2y'], tip:'2x + 2y·y′ = 0, so y′ = −x/y.', mn:'Circle slope: “negative x over y”.'},
+    {n:8, pre:'', sep:': ', f:'Last step of implicit differentiation', d:'solve for y′', tr:['solve for y','plug in x = 0','solve for x'], tip:'Differentiate both sides, move the y′ terms to one side, factor out y′, then divide.', mn:'“Collect, factor, divide”: get every y′ together, then isolate it.'},
+  ],
+  probs: [
+    () => { const [x,y,r] = pk([[3,4,5],[4,3,5],[5,12,13],[12,5,13],[6,8,10],[8,6,10],[8,15,17]]), X = x*pk([1,-1]), Y = y*pk([1,-1]), a = frac(-X,Y);
+      return {label:'Slope of the tangent line', q:`x² + y² = ${r*r} at (${num(X)}, ${num(Y)})`, a, w:[frac(X,Y), frac(-Y,X), frac(Y,X)], n:7, why:`2x + 2y·y′ = 0, so y′ = −x/y = −(${num(X)})/(${num(Y)}) = ${a}.`}; },
+    () => { const n=ri(2,5), c=ri(2,30), X=xp(n-1), Y=xp(n-1,'y');
+      return {label:'Find y′', q:`${xp(n)} + ${xp(n,'y')} = ${c}`, a:`−${X}/${Y}`, w:[`${X}/${Y}`, `−${Y}/${X}`, `−${cf(n,X)}`], n:3, why:`${cf(n,X)} + ${cf(n,Y)}·y′ = 0, so y′ = −${X}/${Y}.`}; },
+    () => { const c=ri(2,20);
+      return {label:'Find y′', q:`xy = ${c}`, a:'−y/x', w:['y/x','−x/y',`${c}/x`], n:4, why:'Product Rule: x·y′ + y = 0, so y′ = −y/x.'}; },
+    () => { const k=ri(2,9), a = k%2===0 ? `${k/2}/y` : `${k}/(2y)`;
+      return {label:'Find y′', q:`y² = ${k}x`, a, w:[`${k}/y`, `${k}y`, k===2 ? 'y' : k%2===0 ? `y/${k/2}` : `2y/${k}`], n:2, why:`2y·y′ = ${k}, so y′ = ${a}.`}; },
+    () => { const n=ri(3,7);
+      return {label:'Find the derivative (y is a function of x)', q:`d/dx ${xp(n,'y')}`, a:`${n}${xp(n-1,'y')}·y′`, w:[`${n}${xp(n-1,'y')}`, `${n}${xp(n-1)}·y′`, `${xp(n-1,'y')}·y′`], n:3, why:`Power Rule gives ${n}${xp(n-1,'y')}. y is a function of x, so multiply by y′.`}; },
+    () => ({label:'Find y′', q:'sin y = x', a:'1/cos y', w:['cos y','−1/cos y','1/sin y'], n:5, why:'cos y·y′ = 1, so y′ = 1/cos y.'}),
+    () => { const c=ri(2,20);
+      return {label:'Find y′', q:`x² + xy = ${c}`, a:'−(2x + y)/x', w:['−(2x + y)/y','(2x + y)/x','−2x − y'], n:4, why:'2x + (x·y′ + y) = 0, so x·y′ = −(2x + y) and y′ = −(2x + y)/x.'}; },
+    () => ({label:'Find y′', q:'eʸ = x²', a:'2x/eʸ', w:['2x','2x·eʸ','x²/eʸ'], n:6, why:'eʸ·y′ = 2x, so y′ = 2x/eʸ.'}),
+  ],
+  tips: ['Treat y as a function of x. Each time you differentiate a y-term, <b>write y′ after it</b>.',
+    'Steps: differentiate both sides → move the y′ terms to one side → factor out y′ → divide.',
+    'x times y needs the <b>Product Rule</b>: d/dx (xy) = x·y′ + y.',
+    'Circle x² + y² = r²: <b>y′ = −x/y</b>.'],
+};
+
+const S37 = {
+  rules: [
+    {n:1, f:'ln x', d:'1/x', tr:['ln x/x','1/(x ln x)','eˣ'], tip:'The natural log has the simplest log rule: 1/x.', mn:'“ln flips x”: ln x → 1/x.'},
+    {n:2, f:'logₐ x', d:'1/(x ln a)', tr:['1/x','ln a/x','x ln a'], tip:'Like ln x, but with an extra ln a in the bottom.', mn:'A base that is not e pays the “ln tax” in the bottom: 1/(x ln a).'},
+    {n:3, f:'ln u', d:'u′/u', tr:['1/u','u′·ln u','u/u′'], tip:'Chain Rule with ln: the inside’s derivative over the inside.', mn:'“Derivative on top, original on the bottom”: u′/u.'},
+    {n:4, f:'ln|x|', d:'1/x', tr:['1/|x|','−1/x','|x|/x'], tip:'The absolute value does not change the answer: 1/x.', mn:'Same as ln x. The bars go away.'},
+    {n:5, f:'logₐ u', d:'u′/(u ln a)', tr:['u′/u','1/(u ln a)','u′·ln a/u'], tip:'The logₐ rule plus the Chain Rule.', mn:'u′ on top; u and the ln tax on the bottom.'},
+    {n:6, pre:'', f:'ln(ab)', d:'ln a + ln b', tr:['ln a · ln b','ln(a + b)','ln a − ln b'], tip:'Log law: the log of a product is a sum.', mn:'Times inside → plus outside.'},
+    {n:7, pre:'', f:'ln(a/b)', d:'ln a − ln b', tr:['ln a / ln b','ln a + ln b','ln(a − b)'], tip:'Log law: the log of a quotient is a difference.', mn:'Divide inside → minus outside.'},
+    {n:8, pre:'', f:'ln(aⁿ)', d:'n·ln a', tr:['(ln a)ⁿ','ln n · ln a','n + ln a'], tip:'Log law: a power comes down in front.', mn:'The power “falls off the roof” to the front.'},
+    {n:9, pre:'', sep:': ', f:'Logarithmic differentiation, step 1', d:'take ln of both sides', tr:['use the Quotient Rule','set y′ = 0','take eˣ of both sides'], tip:'Take ln of both sides, expand with the log laws, differentiate implicitly, then multiply by y.', mn:'For “x in the base and in the power” (like xˣ): ln first, then differentiate.'},
+    {n:10, pre:'', f:'e', d:'lim x→0 (1 + x)^(1/x)', tr:['lim x→0 (1 + x)ˣ','lim x→∞ (1 + x)^(1/x)','lim x→0 (1 + 1/x)ˣ'], tip:'The number e as a limit. Also e = lim n→∞ (1 + 1/n)ⁿ.', mn:'Tiny x, huge power 1/x.'},
+  ],
+  probs: [
+    () => { const k=ri(2,9);
+      return {q:`d/dx ln(${k}x)`, a:'1/x', w:[`${k}/x`, `1/(${k}x)`, `${k}`], n:3, why:`ln(${k}x) = ln ${k} + ln x, and ln ${k} is a constant. Or: u′/u = ${k}/(${k}x) = 1/x.`}; },
+    () => { const c=ri(1,9);
+      return {q:`d/dx ln(x² + ${c})`, a:`2x/(x² + ${c})`, w:[`1/(x² + ${c})`, `2x·ln(x² + ${c})`, '1/(2x)'], n:3, why:`u′/u with u = x² + ${c} and u′ = 2x.`}; },
+    () => { const n=ri(2,7);
+      return {q:`d/dx ln(${xp(n)})`, a:`${n}/x`, w:[`1/${xp(n)}`, `${n}${xp(n-1)}`, `1/(${n}x)`], n:8, why:`ln(${xp(n)}) = ${n}·ln x, so the derivative is ${n}/x.`}; },
+    () => { const a=pk([2,3,5,10]);
+      return {q:`d/dx log${sub(a)} x`, a:`1/(x ln ${a})`, w:['1/x', `ln ${a}/x`, `x ln ${a}`], n:2, why:`logₐ x → 1/(x ln a) with a = ${a}.`}; },
+    () => Math.random() < .5
+      ? {q:'d/dx ln(sin x)', a:'cot x', w:['1/sin x','cos x','tan x'], n:3, why:'u′/u = cos x / sin x = cot x.'}
+      : {q:'d/dx ln(cos x)', a:'−tan x', w:['1/cos x','−sin x','tan x'], n:3, why:'u′/u = −sin x / cos x = −tan x.'},
+    () => ({q:'d/dx (x·ln x)', a:'ln x + 1', w:['1/x','ln x','x + ln x'], n:1, why:'Product Rule: (1)·ln x + x·(1/x) = ln x + 1.'}),
+    () => ({q:'d/dx xˣ', a:'xˣ(ln x + 1)', w:['x·xˣ⁻¹','xˣ·ln x','xˣ'], n:9, why:'ln y = x·ln x. Then y′/y = ln x + 1, so y′ = xˣ(ln x + 1).'}),
+    () => { const a=ri(2,9), b=ri(1,9), g=`${a}x + ${b}`;
+      return {q:`d/dx ln(${g})`, a:`${a}/(${g})`, w:[`1/(${g})`, `${a}·ln(${g})`, `${a}/x`], n:3, why:`u′/u with u = ${g} and u′ = ${a}.`}; },
+  ],
+  tips: ['<b>ln u → u′/u</b>: “derivative on top, original on the bottom.”',
+    '<b>logₐ</b> rules have an extra <b>ln a</b> in the bottom.',
+    'Use the log laws first: ln(kx) = ln k + ln x, so its derivative is just 1/x.',
+    'x in the base <b>and</b> in the exponent (xˣ): take ln of both sides first.'],
+};
+
+const S38 = {
+  rules: [
+    {n:1, pre:'', f:'Velocity v(t)', d:'s′(t)', tr:['s″(t)','|s(t)|','s(t)/t'], tip:'Velocity is the rate of change of position with respect to time: v = ds/dt.', mn:'Position → (derivative) → velocity.'},
+    {n:2, pre:'', f:'Acceleration a(t)', d:'v′(t) = s″(t)', tr:['s′(t)','v(t)/t','|v(t)|'], tip:'Acceleration is the rate of change of velocity: a = dv/dt.', mn:'s → v → a: one derivative for each step.'},
+    {n:3, pre:'', f:'Speed', d:'|v(t)|', tr:['v(t)','a(t)','|s(t)|'], tip:'Speed is the absolute value of velocity. It is never negative.', mn:'Speed has no direction, so drop the sign.'},
+    {n:4, pre:'', sep:' ', f:'Particle is at rest when', d:'v(t) = 0', tr:['s(t) = 0','a(t) = 0','t = 0'], tip:'At rest means the velocity is zero.', mn:'Rest = not moving = v = 0.'},
+    {n:5, pre:'', sep:' ', f:'Particle moves in the positive direction when', d:'v(t) > 0', tr:['s(t) > 0','a(t) > 0','v(t) < 0'], tip:'The sign of v tells the direction.', mn:'Velocity sign = direction sign.'},
+    {n:6, pre:'', sep:' ', f:'Particle speeds up when', d:'v and a have the same sign', tr:['a > 0','v > 0','v and a have opposite signs'], tip:'When v and a have the same sign, the push is in the direction of motion.', mn:'Same sign = speeding up. A positive a alone does not mean faster!'},
+    {n:7, pre:'', sep:' ', f:'Particle slows down when', d:'v and a have opposite signs', tr:['a < 0','v < 0','v and a have the same sign'], tip:'When v and a have opposite signs, the push is against the motion.', mn:'Opposite signs = brakes on.'},
+    {n:8, pre:'', f:'Linear density ρ', d:'dm/dx', tr:['m/x','dx/dm','dm/dt'], tip:'Linear density is the rate of change of mass with respect to length.', mn:'Density: mass per length → dm/dx.'},
+    {n:9, pre:'', f:'Current I', d:'dQ/dt', tr:['Q/t','dt/dQ','dQ/dx'], tip:'Current is the rate of change of charge with respect to time.', mn:'Current: charge per time → dQ/dt.'},
+    {n:10, pre:'', f:'Population growth rate', d:'dn/dt', tr:['n/t','dt/dn','Δn'], tip:'The growth rate is the rate of change of the population n with respect to time.', mn:'Growth: individuals per time → dn/dt.'},
+    {n:11, pre:'', f:'Average rate of change', d:'Δy/Δx = [f(x₂) − f(x₁)]/(x₂ − x₁)', tr:['f′(x₁)','f(x₂) − f(x₁)','(x₂ − x₁)/[f(x₂) − f(x₁)]'], tip:'Average rate = slope of the secant line.', mn:'Average = “rise over run” between two points.'},
+    {n:12, pre:'', f:'Instantaneous rate of change', d:'lim Δx→0 Δy/Δx = f′(x)', tr:['Δy/Δx','f(x₂) − f(x₁)','f(x)/x'], tip:'Instantaneous rate = the derivative = slope of the tangent line.', mn:'Shrink the run to 0 and the average becomes the derivative.'},
+  ],
+  probs: [
+    () => { const b=pk([3,6,9]), c=ri(2,12);
+      return {label:'Find the velocity v(t)', q:`s(t) = ${poly([[1,3],[-b,2],[c,1]],'t')}`, a:poly([[3,2],[-2*b,1],[c,0]],'t'), w:[poly([[6,1],[-2*b,0]],'t'), poly([[3,2],[-b,1],[c,0]],'t'), poly([[3,2],[-2*b,1]],'t')], n:1, why:'v(t) = s′(t). Use the Power Rule on each term.'}; },
+    () => { const a=ri(1,5), b=ri(1,9), k=ri(1,5);
+      return {label:`Find the velocity at t = ${k} s`, q:`s(t) = ${poly([[a,2],[b,1]],'t')} (meters)`, a:`${2*a*k+b} m/s`, w:[`${a*k*k+b*k} m/s`, `${2*a} m/s`, `${2*a*k} m/s`], n:1, why:`v(t) = ${poly([[2*a,1],[b,0]],'t')}, so v(${k}) = ${2*a*k+b}.`}; },
+    () => { const k=ri(2,9);
+      return {label:'When is the particle at rest?', q:`s(t) = ${poly([[1,2],[-2*k,1]],'t')}`, a:`t = ${k} s`, w:[`t = ${2*k} s`, 't = 0 s', `t = ${k*k} s`], n:4, why:`v(t) = 2t − ${2*k} = 0, so t = ${k}.`}; },
+    () => { const b=pk([3,6,9]), c=ri(2,12);
+      return {label:'Find the acceleration a(t)', q:`s(t) = ${poly([[1,3],[-b,2],[c,1]],'t')}`, a:poly([[6,1],[-2*b,0]],'t'), w:[poly([[3,2],[-2*b,1],[c,0]],'t'), '6t', poly([[6,1],[-b,0]],'t')], n:2, why:`v(t) = ${poly([[3,2],[-2*b,1],[c,0]],'t')}, then a(t) = v′(t).`}; },
+    () => { const v=pk([1,-1])*ri(1,9), a=pk([1,-1])*ri(1,9), same = v*a > 0;
+      return {label:'The particle is…', q:`At t = 2 s: v = ${num(v)} m/s, a = ${num(a)} m/s²`, a: same ? 'speeding up' : 'slowing down', w:[same ? 'slowing down' : 'speeding up', 'at rest', 'moving at a constant speed'], n: same ? 6 : 7,
+        why: same ? 'v and a have the same sign, so the particle speeds up.' : 'v and a have opposite signs, so the particle slows down.'}; },
+    () => { const k=ri(2,9), x=ri(1,5);
+      return {label:`Linear density at x = ${x} m`, q:`m(x) = ${k}x² kg`, a:`${2*k*x} kg/m`, w:[`${k*x*x} kg/m`, `${2*k} kg/m`, `${k*x} kg/m`], n:8, why:`ρ = dm/dx = ${2*k}x, so ρ(${x}) = ${2*k*x}.`}; },
+    () => { const b=ri(1,4), c=ri(2,9), t=ri(1,4);
+      return {label:`Current at t = ${t} s`, q:`Q(t) = ${poly([[1,3],[-b,2],[c,1]],'t')} (coulombs)`, a:`${num(3*t*t-2*b*t+c)} A`, w:[`${num(t**3-b*t*t+c*t)} A`, `${3*t*t} A`, `${num(6*t-2*b)} A`], n:9, why:`I = dQ/dt = ${poly([[3,2],[-2*b,1],[c,0]],'t')}, so I(${t}) = ${num(3*t*t-2*b*t+c)}.`}; },
+    () => { const n0=pk([100,200,500]), k=ri(1,4), v=n0*2**k;
+      return {label:`Growth rate at t = ${k} h`, q:`n(t) = ${n0}·2ᵗ cells`, a:`${v}·ln 2 cells/h`, w:[`${v} cells/h`, `${n0*k*2**(k-1)} cells/h`, `${v}/ln 2 cells/h`], n:10, why:`dn/dt = ${n0}·2ᵗ·ln 2, so at t = ${k}: ${n0}·${2**k}·ln 2 = ${v}·ln 2.`}; },
+    () => { const a=ri(0,3), b=a+ri(1,4);
+      return {label:`Average velocity on [${a}, ${b}]`, q:'s(t) = t² (meters)', a:`${a+b} m/s`, w:[`${2*b} m/s`, `${b*b-a*a} m/s`, `${b*b} m/s`], n:11, why:`[s(${b}) − s(${a})]/(${b} − ${a}) = (${b*b} − ${a*a})/${b-a} = ${a+b}.`}; },
+  ],
+  tips: ['<b>s → v → a</b>: position, then velocity (s′), then acceleration (v′ = s″).',
+    '<b>Speed = |v|</b>. <b>At rest: v = 0</b>.',
+    '<b>Same sign</b> (v and a) = speeding up. <b>Opposite signs</b> = slowing down.',
+    'Every rate is a derivative: density dm/dx, current dQ/dt, growth dn/dt.'],
+};
+
+const S41 = {
+  rules: [
+    {n:1, pre:'', f:'d/dt (x²)', d:'2x·dx/dt', tr:['2x','2·dx/dt','x²·dx/dt'], tip:'x changes with time, so the Chain Rule adds dx/dt.', mn:'Every changing letter gets a d/dt tag: x → dx/dt.'},
+    {n:2, pre:'', f:'A = πr² ⇒ dA/dt', d:'2πr·dr/dt', tr:['2πr','πr²·dr/dt','2π·dr/dt'], tip:'Differentiate the area of a circle with respect to t.', mn:'Area rule, then tag the r: dr/dt.'},
+    {n:3, pre:'', f:'V = (4/3)πr³ ⇒ dV/dt', d:'4πr²·dr/dt', tr:['4πr²','(4/3)πr²·dr/dt','4πr·dr/dt'], tip:'Differentiate the volume of a sphere with respect to t.', mn:'The 3 comes down and cancels the 3 in 4/3: 4πr²·dr/dt.'},
+    {n:4, pre:'', f:'V = s³ ⇒ dV/dt', d:'3s²·ds/dt', tr:['3s²','s²·ds/dt','3s·ds/dt'], tip:'Differentiate the volume of a cube with respect to t.', mn:'Power Rule, then the ds/dt tag.'},
+    {n:5, pre:'', f:'x² + y² = z² ⇒', d:'2x·dx/dt + 2y·dy/dt = 2z·dz/dt', tr:['2x + 2y = 2z','dx/dt + dy/dt = dz/dt','2x·dx/dt · 2y·dy/dt = 2z·dz/dt'], tip:'Pythagorean Theorem, differentiated with respect to t. For a ladder, z is constant, so dz/dt = 0.', mn:'Each square gets its own tag: 2x·dx/dt, 2y·dy/dt, 2z·dz/dt.'},
+    {n:6, pre:'', f:'V = (1/3)πr²h, r constant ⇒ dV/dt', d:'(1/3)πr²·dh/dt', tr:['(2/3)πr·dh/dt','(1/3)πr²','πr²·dh/dt'], tip:'Only h changes, so only h gets a tag.', mn:'Constants stay; only the moving letter gets d/dt.'},
+    {n:7, pre:'', sep:': ', f:'When to substitute the given numbers', d:'after you differentiate', tr:['before you differentiate','before you write the equation','never'], tip:'Strategy step 7: substitute only after step 6 (differentiate with respect to t). If you substitute first, the changing quantities become constants and their rates disappear.', mn:'“Differentiate first, plug in last.”'},
+    {n:8, pre:'', sep:': ', f:'A quantity that decreases has a rate that is', d:'negative', tr:['positive','zero','undefined'], tip:'A shrinking quantity has a negative derivative, for example dV/dt = −3.', mn:'Draining, shrinking, falling → minus sign on the rate.'},
+    {n:9, pre:'', sep:': ', f:'To differentiate with respect to t, use the', d:'Chain Rule', tr:['Quotient Rule','Closed Interval Method','Extreme Value Theorem'], tip:'Each variable is a function of t, so each one needs the Chain Rule.', mn:'Related rates = Chain Rule on every variable.'},
+  ],
+  probs: [
+    () => { const k=ri(2,10), m=ri(1,5);
+      return {label:'How fast does the area increase?', q:`Circle: r = ${k} cm, dr/dt = ${m} cm/s`, a:`${2*k*m}π cm²/s`, w:[`${2*k}π cm²/s`, `${k*k*m}π cm²/s`, `${2*k*m} cm²/s`], n:2, why:`dA/dt = 2πr·dr/dt = 2π(${k})(${m}) = ${2*k*m}π.`}; },
+    () => { const k=ri(2,6), m=ri(1,4);
+      return {label:'How fast does the volume increase?', q:`Sphere: r = ${k} cm, dr/dt = ${m} cm/s`, a:`${4*k*k*m}π cm³/s`, w:[`${4*k*k}π cm³/s`, `${4*k*m}π cm³/s`, `${k*k*k*m}π cm³/s`], n:3, why:`dV/dt = 4πr²·dr/dt = 4π(${k*k})(${m}) = ${4*k*k*m}π.`}; },
+    () => { const V=pk([36,64,100,144]), k=ri(2,6), a = fracPi(V, 4*k*k) + ' cm/s';
+      return {label:'How fast does the radius increase?', q:`Balloon: dV/dt = ${V} cm³/s, r = ${k} cm`, a, w:[frac(V, 4*k*k) + ' cm/s', fracPi(V, 4*k) + ' cm/s', fracPi(V, k*k) + ' cm/s'], n:3, why:`dV/dt = 4πr²·dr/dt, so ${V} = 4π(${k*k})·dr/dt and dr/dt = ${a}.`}; },
+    () => { const [x,y,z] = pk([[6,8,10],[8,6,10],[3,4,5],[5,12,13],[12,5,13],[8,15,17]]), m=ri(1,3), a = frac(x*m,y) + ' ft/s';
+      return {label:'How fast does the top slide down?', q:`A ${z} ft ladder. The bottom slides away at ${m} ft/s. The bottom is ${x} ft from the wall.`, a, w:[frac(y*m,x) + ' ft/s', `${m} ft/s`, frac(x*m,z) + ' ft/s'], n:5,
+        why:`x² + y² = ${z*z}, so 2x·dx/dt + 2y·dy/dt = 0. y = ${y}, so dy/dt = −(${x})(${m})/${y}. The top slides down at ${a}.`}; },
+    () => { const k=ri(2,8), m=ri(1,4);
+      return {label:'How fast does the volume increase?', q:`Cube: side s = ${k} cm, ds/dt = ${m} cm/s`, a:`${3*k*k*m} cm³/s`, w:[`${3*k*k} cm³/s`, `${k*k*k*m} cm³/s`, `${3*k*m} cm³/s`], n:4, why:`dV/dt = 3s²·ds/dt = 3(${k*k})(${m}) = ${3*k*k*m}.`}; },
+    () => { const k=ri(2,12), m=ri(1,5);
+      return {label:'How fast does the area increase?', q:`Square: side s = ${k} cm, ds/dt = ${m} cm/s`, a:`${2*k*m} cm²/s`, w:[`${k*k*m} cm²/s`, `${2*k} cm²/s`, `${2*m} cm²/s`], n:1, why:`A = s², so dA/dt = 2s·ds/dt = 2(${k})(${m}) = ${2*k*m}.`}; },
+    () => { const st = ['Read the problem','Draw a figure','Name the quantities that change with time','Write the given and wanted rates as derivatives','Write an equation that relates the quantities','Differentiate both sides with respect to t','Substitute the numbers and solve for the rate'];
+      const i = ri(0,5);
+      return {label:'Strategy: which step comes next?', q:`After: ${st[i]}`, a:st[i+1], w:shuffle(st.filter((_,j) => j!==i && j!==i+1)), n:7, why:`The strategy has 7 steps in this order: ${st.join(' → ')}.`}; },
+  ],
+  tips: ['<b>Differentiate first, plug in numbers last.</b>',
+    'Every changing variable gets its own tag: x → dx/dt, r → dr/dt.',
+    'Shrinking quantity = <b>negative</b> rate.',
+    'Ladder: x² + y² = (length)². The length is constant, so its rate is 0.'],
+};
+
+const S42 = {
+  rules: [
+    {n:1, pre:'', sep:': ', f:'Critical number c', d:'c is in the domain and f′(c) = 0 or f′(c) does not exist', tr:['f(c) = 0','f″(c) = 0','f′(c) = 0 only'], tip:'A critical number is where the derivative is zero or does not exist.', mn:'“Zero or broken”: f′ = 0, or f′ does not exist.'},
+    {n:2, pre:'', sep:': ', f:'Fermat’s Theorem', d:'local max or min at c and f′(c) exists ⇒ f′(c) = 0', tr:['f′(c) = 0 ⇒ local max or min at c','f continuous at c ⇒ f′(c) = 0','local max at c ⇒ f(c) = 0'], tip:'At a smooth peak or valley, the tangent line is flat.', mn:'Peak or valley (and smooth) → flat tangent. Not the other way around!'},
+    {n:3, pre:'', sep:': ', f:'Extreme Value Theorem', d:'f continuous on a closed [a, b] ⇒ f has an absolute max and an absolute min on [a, b]', tr:['f continuous on (a, b) ⇒ absolute max and min','f differentiable ⇒ f′ = 0 somewhere','f has a max ⇒ f is continuous'], tip:'The EVT needs both: continuous and a closed interval.', mn:'“Closed and connected”: a closed interval and no breaks give both extremes.'},
+    {n:4, pre:'', sep:': ', f:'Closed Interval Method', d:'compare f at the critical numbers in (a, b) and at a and b', tr:['find where f″ = 0','compare f′ at the endpoints','use the critical numbers only'], tip:'Find f at the critical numbers inside, and at both endpoints. The largest is the absolute max. The smallest is the absolute min.', mn:'“Crits and ends”: check them all, then pick the biggest and smallest.'},
+    {n:5, pre:'', sep:': ', f:'Absolute max at c', d:'f(c) ≥ f(x) for all x in the domain', tr:['f(c) ≥ f(x) for x near c','f′(c) = 0','f(c) > 0'], tip:'Absolute (global) = highest point on the whole domain.', mn:'Absolute = all x.'},
+    {n:6, pre:'', sep:': ', f:'Local max at c', d:'f(c) ≥ f(x) for x near c', tr:['f(c) ≥ f(x) for all x','f′(c) > 0','f(c) is the largest endpoint value'], tip:'Local (relative) = highest point in its neighborhood.', mn:'Local = near c only. A hilltop, not the mountain.'},
+    {n:7, pre:'', sep:': ', f:'f(x) = x³ at x = 0', d:'f′(0) = 0 but no max or min', tr:['local max','local min','f′(0) does not exist'], tip:'The converse of Fermat’s Theorem is false: f′(c) = 0 does not guarantee a max or min.', mn:'x³ flattens, then keeps climbing. Flat ≠ peak.'},
+    {n:8, pre:'', sep:': ', f:'Local max or min at an endpoint', d:'not possible (an absolute one is possible)', tr:['always happens','possible only if f′ = 0 there','possible if f is continuous'], tip:'A local extreme needs points on both sides of c. An endpoint has only one side.', mn:'Ends can win the absolute prize, never the local one.'},
+    {n:9, pre:'', sep:': ', f:'f(x) = |x| at x = 0', d:'critical number, because f′(0) does not exist', tr:['not critical, because f(0) = 0','critical, because f′(0) = 0','not in the domain'], tip:'The corner at 0 has no tangent line, so f′(0) does not exist.', mn:'Corner = broken derivative = critical number.'},
+  ],
+  probs: [
+    () => { const k=pk([1,-1])*ri(1,6), c=ri(0,9);
+      return {label:'Find the critical number', q:`f(x) = ${poly([[1,2],[-2*k,1],[c,0]])}`, a:`x = ${num(k)}`, w:[`x = ${num(2*k)}`, `x = ${num(-k)}`, `x = ${c}`], n:1, why:`f′(x) = ${poly([[2,1],[-2*k,0]])} = 0, so x = ${num(k)}.`}; },
+    () => { const k=ri(1,5);
+      return {label:'Find the critical numbers', q:`f(x) = ${poly([[1,3],[-3*k*k,1]])}`, a:`x = ±${k}`, w:[`x = ${k} only`, 'x = 0', `x = ±${3*k*k}`], n:1, why:`f′(x) = ${poly([[3,2],[-3*k*k,0]])} = 0, so x² = ${k*k} and x = ±${k}.`}; },
+    () => { const k=ri(1,4), j=ri(1,4), m=2*k+j, f=poly([[1,2],[-2*k,1]]), mx = Math.random() < .5;
+      const why = `f′ = 0 at x = ${k}. f(0) = 0, f(${k}) = ${num(-k*k)}, f(${m}) = ${m*j}. Largest = absolute max; smallest = absolute min.`;
+      return mx ? {label:`Absolute maximum value on [0, ${m}]`, q:`f(x) = ${f}`, a:String(m*j), w:['0', num(-k*k), String(m)], n:4, why}
+                : {label:`Absolute minimum value on [0, ${m}]`, q:`f(x) = ${f}`, a:num(-k*k), w:['0', String(m*j), String(k)], n:4, why}; },
+    () => { const b=pk([2,3,4]), fb=b**3-3*b, mx = Math.random() < .5;
+      const why = `f′(x) = 3x² − 3 = 0 at x = ±1. Only x = 1 is in [0, ${b}]. f(0) = 0, f(1) = −2, f(${b}) = ${fb}.`;
+      return mx ? {label:`Absolute maximum value on [0, ${b}]`, q:'f(x) = x³ − 3x', a:String(fb), w:['0','−2','1', String(fb+2)], n:4, why}
+                : {label:`Absolute minimum value on [0, ${b}]`, q:'f(x) = x³ − 3x', a:'−2', w:['0','1', String(fb), '−1'], n:4, why}; },
+    () => ({label:'f′(c) = 0. Must f have a local max or min at c?', q:'f′(c) = 0', a:'No. Example: x³ at 0.', w:['Yes, always','Yes, if f is continuous','Only if c is an endpoint'], n:7, why:'f(x) = x³ has f′(0) = 0, but no max or min at 0. The converse of Fermat’s Theorem is false.'}),
+    () => { const k=pk([1,-1])*ri(1,9);
+      return {label:'Find the critical number', q:`f(x) = |x ${k<0?'+':'−'} ${Math.abs(k)}|`, a:`x = ${num(k)} (f′ does not exist)`, w:[`x = ${num(-k)}`, 'x = 0', 'There is no critical number'], n:9, why:`The graph has a corner at x = ${num(k)}, so f′ does not exist there.`}; },
+    () => { const C = [['f(x) = 1/x on [1, 3]','Yes','f is continuous on [1, 3], and the interval is closed.'],
+        ['f(x) = 1/x on [−1, 1]','No: f is not continuous on the interval','1/x is not defined at x = 0.'],
+        ['f(x) = x² on (0, 1)','No: the interval is not closed','(0, 1) is open. The EVT needs [a, b].'],
+        ['f(x) = sin x on [0, π]','Yes','sin x is continuous everywhere, and [0, π] is closed.'],
+        ['f(x) = √x on [0, 4]','Yes','√x is continuous on [0, 4], and the interval is closed.'],
+        ['f(x) = tan x on [0, π]','No: f is not continuous on the interval','tan x is not defined at π/2.']];
+      const [q,a,why] = pk(C);
+      return {label:'Does the Extreme Value Theorem apply?', q, a, w:['Yes','No: f is not continuous on the interval','No: the interval is not closed','Yes, but only for the absolute max'], n:3, why}; },
+  ],
+  tips: ['<b>Critical number</b>: f′ = 0 or f′ does not exist (and c is in the domain).',
+    '<b>Closed Interval Method</b>: find f at the critical numbers inside and at both endpoints. Biggest = absolute max. Smallest = absolute min.',
+    'f′(c) = 0 does <b>not</b> guarantee a max or min: y = x³ at 0.',
+    'The EVT needs both: <b>continuous</b> and a <b>closed</b> interval.'],
+};
+
+const SETS = {
+  basic: {code:'1–13', tab:'Basics 1–13', title:'Basic rules 1–13', rules:R, probs:[]},
+  s34: {code:'3.4', tab:'3.4 Chain', title:'3.4 The Chain Rule', sub:'Composite functions: outside, then inside.', ...S34},
+  s35: {code:'3.5', tab:'3.5 Implicit', title:'3.5 Implicit Differentiation', sub:'Differentiate y as a function of x, then solve for y′.', ...S35},
+  s37: {code:'3.7', tab:'3.7 Logs', title:'3.7 Derivatives of Logarithmic Functions', sub:'ln, logₐ, log laws, and logarithmic differentiation.', ...S37},
+  s38: {code:'3.8', tab:'3.8 Rates', title:'3.8 Rates of Change in the Sciences', sub:'Position, velocity, acceleration, density, current, growth.', ...S38},
+  s41: {code:'4.1', tab:'4.1 Related', title:'4.1 Related Rates', sub:'Differentiate an equation with respect to time t.', ...S41},
+  s42: {code:'4.2', tab:'4.2 Max/Min', title:'4.2 Maximum and Minimum Values', sub:'Critical numbers, Fermat, EVT, Closed Interval Method.', ...S42},
+};
+const SECTIONS = ['s34','s35','s37','s38','s41','s42'];
+Object.entries(SETS).forEach(([id, s]) => {
+  s.id = id;
+  s.rules.forEach(r => r.set = s);
+  s.probs = s.probs.map(fn => ({fn, set:s}));
+});
+// "Mixed" uses every section's rules and problems.
+SETS.mixed = {id:'mixed', code:'3.4–4.2', tab:'Mixed review', title:'Mixed review: 3.4–4.2', sub:'Every section in one game.',
+  rules: SECTIONS.flatMap(id => SETS[id].rules), probs: SECTIONS.flatMap(id => SETS[id].probs)};
+
+// src: where questions come from. dir: fwd, rev or mix. sheet: rules on screen. per: seconds per question. clock: game seconds.
+const MODES = {
+  fwd:{src:'rules', dir:'fwd'}, rev:{src:'rules', dir:'rev'}, mix:{src:'rules', dir:'mix'},
+  guided:{src:'rules', dir:'fwd', sheet:1}, guided5:{src:'rules', dir:'fwd', sheet:1, per:5},
+  blitz:{src:'rules', dir:'fwd', clock:60},
+  learn:{src:'rules', dir:'mix', sheet:1, total:12},
+  drill:{src:'rules', dir:'mix', total:15},
+  probs:{src:'probs', total:10},
+  timed:{src:'rules', dir:'mix', per:8, total:15},
+  sblitz:{src:'rules', dir:'mix', clock:60},
+  final:{src:'probs', total:20},
+};
+
+// ---------- saved bests (this browser only) ----------
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+};
+let BEST = store.get('dd-best', {});
+
+// ---------- tables and menus ----------
+const isDeriv = r => r.pre === undefined;
+const ruleLine = r => isDeriv(r) ? `${D}${r.f} = ${r.d}` : r.f + (r.sep ?? ' = ') + r.d;
+const ruleName = r => r.set.id==='basic' ? `Rule ${r.n}` : `${r.set.code} rule ${r.n}`;
+function rulesTable(set, hl){
+  return '<table>' + set.rules.map(r => `<tr class="${r.trig?'trig':''} ${r===hl?'hl':''}"><td>${r.n}</td>` +
+    (isDeriv(r) ? `<td>${D}${esc(r.f)}</td><td>= ${esc(r.d)}</td>` : `<td class="full" colspan="2">${esc(ruleLine(r))}</td>`) + '</tr>').join('') + '</table>';
 }
-function sheet(){ $('sheet').innerHTML = rulesTable(); }
-const guided = () => S.mode==='guided' || S.mode==='guided5';
 function toggle(id){ $(id).classList.toggle('hidden'); }
 function show(id){ ['menu','game','end'].forEach(x => $(x).classList.toggle('hidden', x!==id)); }
 
-function start(set, mode){
-  const pool = R.filter(r => set==='all' || r.trig);
-  const total = mode==='blitz' ? Infinity : (mode==='mix' ? 25 : set==='trig' ? 15 : 20);
-  clearInterval(S.timer); clearInterval(S.qtimer); clearInterval(S.wtimer);
-  S = {set, mode, pool, total, i:0, score:0, streak:0, best:0, missed:{}, queue:[], last:null, lock:false, time:60};
-  $('timerWrap').classList.toggle('hidden', mode!=='blitz' && mode!=='guided5');
-  $('guide').classList.toggle('hidden', !guided());
-  if (mode==='blitz'){
-    $('tm').textContent = 60;
-    S.timer = setInterval(() => { S.time--; $('tm').textContent = Math.max(0,S.time); if (S.time<=0) finish(); }, 1000);
+function modeBtn(setId, mode, title, desc){
+  const b = BEST[`${setId}:${mode}`];
+  const best = b==null ? '' : `<em class="best">Best ${b}${MODES[mode].clock ? '' : '%'}</em>`;
+  return `<button onclick="start('${setId}','${mode}')">${best}<b>${title}</b><span>${desc}</span></button>`;
+}
+let TAB = store.get('dd-tab', 'basic');
+function renderTabs(){
+  $('tabs').innerHTML = ['basic', ...SECTIONS, 'mixed'].map(id => `<button data-t="${id}" class="${id===TAB?'on':''}" onclick="tab('${id}')">${SETS[id].tab}</button>`).join('');
+}
+function tab(id){
+  if (!SETS[id]) id = 'basic';
+  TAB = id; store.set('dd-tab', id); renderTabs();
+  $('basicMenu').classList.toggle('hidden', id!=='basic');
+  $('secMenu').classList.toggle('hidden', id==='basic');
+  if (id==='basic') return;
+  const s = SETS[id];
+  if (id==='mixed'){
+    $('secMenu').innerHTML = `<div class="card modes"><div class="secTitle">${esc(s.title)}</div><div class="secSub">${esc(s.sub)}</div>`
+      + modeBtn(id,'final','✏️ Final review: problems','Problems from all 6 sections. No timer. 20 questions.')
+      + modeBtn(id,'drill','🧠 Rules from every section','No rules on screen. Both directions. No timer. 15 questions.')
+      + modeBtn(id,'sblitz','⚡ 60-second blitz','All section rules. Wrong answers cost 3 sec.')
+      + '</div>';
+    return;
+  }
+  $('secMenu').innerHTML = `<div class="card modes"><div class="secTitle">${esc(s.title)}</div><div class="secSub">${esc(s.sub)}</div>`
+    + modeBtn(id,'learn','📖 Level 1: Learn the rules',`Rules shown on screen. No timer. 12 questions.`)
+    + modeBtn(id,'drill','🧠 Level 2: Memorize the rules',`No rules on screen. Both directions. No timer. 15 questions.`)
+    + modeBtn(id,'timed','⏱ Level 3: Rules, 8 seconds each',`No rules on screen. 15 questions.`)
+    + modeBtn(id,'probs','✏️ Level 4: Problems',`Use the rules on real problems. No timer. 10 questions.`)
+    + modeBtn(id,'sblitz','⚡ 60-second blitz',`As many rules as you can. Wrong answers cost 3 sec.`)
+    + `</div><div class="card"><b>Rules for ${s.code}</b> <a class="link" onclick="toggle('secSheet')">show / hide</a><div id="secSheet" class="hidden tbl" style="margin-top:10px">${rulesTable(s)}</div></div>`
+    + `<div class="card tips"><b>Memory tricks</b><ul>${s.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+}
+
+// ---------- game ----------
+let S = {};
+function stopTimers(){ clearInterval(S.timer); clearInterval(S.qtimer); clearInterval(S.wtimer); }
+function start(setId, mode, opt={}){
+  stopTimers();
+  const set = SETS[setId], m = MODES[mode];
+  const pool = set.rules.filter(r => !opt.trig || r.trig);
+  const total = m.clock ? Infinity : (opt.total || m.total || 20);
+  S = {setId, mode, opt, set, m, pool, total, i:0, score:0, streak:0, best:0, answered:0, missed:new Map(), queue:[], last:null, lastP:null, lock:false, paused:false, time:m.clock||0};
+  $('timerWrap').classList.toggle('hidden', !m.clock && !m.per);
+  $('guide').classList.toggle('hidden', !m.sheet);
+  if (m.clock){
+    $('tm').textContent = m.clock;
+    // The game clock stops while a hint is on screen.
+    S.timer = setInterval(() => { if (S.paused) return; S.time--; $('tm').textContent = Math.max(0,S.time); if (S.time<=0) finish(); }, 1000);
   }
   $('sc').textContent = 0; $('st').textContent = 0;
   show('game'); next();
 }
 
-function pick(){
-  // Missed rules come back after a short gap.
+const dirFor = () => S.m.dir==='mix' ? (Math.random()<.5 ? 'rev' : 'fwd') : S.m.dir;
+function ruleItem(r, dir){
+  const redo = () => ruleItem(r, dirFor());
+  if (dir==='fwd') return {label: isDeriv(r) ? 'Find the derivative' : 'Pick the match', q: isDeriv(r) ? D + r.f : r.f + (r.sep===' ' ? ' …' : ''), a:r.d, w:r.tr, rule:r, redo};
+  // Reverse: show the right side, pick the left side. Prefer look-alikes of the same kind.
+  const like = x => (isDeriv(x)===isDeriv(r) ? 2 : 0) + ((x.trig||0)===(r.trig||0) ? 1 : 0);
+  const others = shuffle(S.pool.filter(x => x!==r)).sort((x,y) => like(y) - like(x));
+  if (isDeriv(r)) return {label:'Which function has this derivative?', q:(r.set.id==='basic' ? 'f′(x) = ' : 'f′ = ') + r.d, a:r.f, w:others.map(x => x.f), rule:r, redo};
+  return {label:'Which one does this match?', q:r.d, a:r.f, w:others.map(x => x.f), rule:r, redo};
+}
+// When two wrong numbers come out equal, add near-miss numbers so there are always 3 wrong choices.
+function pad(a, w){
+  w = [...new Set(w)].filter(x => x!==a);
+  const m = a.match(/^(.*?)(−?)(\d+)(.*)$/);
+  if (!m) return w;
+  const n = (m[2] ? -1 : 1) * +m[3];
+  for (const c of [n*2, n+1, n-1, n+2, n*3]) {
+    if (w.length >= 3) break;
+    const s = m[1] + num(c) + m[4];
+    if (s!==a && !w.includes(s)) w.push(s);
+  }
+  return w;
+}
+function probItem(p){
+  const g = p.fn();
+  return {label:g.label || 'Find the derivative', q:g.q, a:g.a, w:pad(g.a, g.w), why:g.why, rule:p.set.rules.find(r => r.n===g.n), redo:() => probItem(p)};
+}
+function makeItem(){
+  // Missed questions come back after a short gap.
   const due = S.queue.findIndex(q => q.at <= S.i);
-  if (due >= 0) return S.queue.splice(due,1)[0].r;
-  let r;
-  do { r = S.pool[Math.floor(Math.random()*S.pool.length)]; } while (S.pool.length>1 && r===S.last);
-  return r;
+  if (due >= 0) return S.queue.splice(due,1)[0].redo();
+  if (S.m.src==='probs'){
+    let p; do { p = pk(S.set.probs); } while (S.set.probs.length>1 && p===S.lastP);
+    S.lastP = p; return probItem(p);
+  }
+  let r; do { r = pk(S.pool); } while (S.pool.length>1 && r===S.last);
+  S.last = r; return ruleItem(r, dirFor());
 }
 
 function next(){
-  clearInterval(S.wtimer);
+  clearInterval(S.wtimer); S.paused = false;
   if ($('game').classList.contains('hidden')) return;
+  if (S.m.clock && S.time <= 0) return finish();
   if (S.i >= S.total) return finish();
   S.lock = false;
-  const r = pick(); S.last = r; S.cur = r;
-  const dir = S.mode==='rev' ? 'rev' : S.mode==='mix' ? (Math.random()<.5?'rev':'fwd') : 'fwd';
-  S.dir = dir;
-  let correct, opts;
-  if (dir==='fwd'){
-    $('ql').textContent = 'Find the derivative';
-    $('q').textContent = D + r.f;
-    correct = r.d;
-    opts = [correct, ...shuffle([...r.tr]).slice(0,3)];
-  } else {
-    $('ql').textContent = 'Which function has this derivative?';
-    $('q').textContent = "f′(x) = " + r.d;
-    correct = r.f;
-    const others = shuffle(S.pool.filter(x => x!==r).map(x => x.f));
-    // Prefer trig look-alikes when the answer is trig.
-    if (r.trig) others.sort((a,b) => (R.find(x=>x.f===b).trig||0) - (R.find(x=>x.f===a).trig||0));
-    opts = [correct, ...others.slice(0,3)];
-  }
-  S.correct = correct;
-  shuffle(opts);
-  $('opts').innerHTML = opts.map((o,k) => `<button data-v="${o}" onclick="answer(this)">${o}</button>`).join('');
+  const it = makeItem(); S.cur = it;
+  $('ql').textContent = it.label;
+  $('q').textContent = it.q;
+  $('q').className = 'q' + (it.q.length > 26 ? ' long' : '');
+  const wrong = shuffle([...new Set(it.w)].filter(x => x!==it.a));
+  const opts = shuffle([it.a, ...wrong].slice(0,4));
+  S.ans = opts.indexOf(it.a);
+  $('opts').innerHTML = opts.map((o,k) => `<button class="${o.length>22?'long':''}" data-k="${k}" onclick="answer(this)">${esc(o)}</button>`).join('');
   $('fb').textContent = ''; $('fb').className = 'fb';
-  if (guided()) $('guide').innerHTML = rulesTable();
-  if (S.mode==='guided5'){
-    clearInterval(S.qtimer); S.qt = 5; $('tm').textContent = 5;
+  if (S.m.sheet) $('guide').innerHTML = rulesTable(S.set);
+  if (S.m.per){
+    clearInterval(S.qtimer); S.qt = S.m.per; $('tm').textContent = S.qt;
     S.qtimer = setInterval(() => { S.qt--; $('tm').textContent = S.qt; if (S.qt<=0) answer(null); }, 1000);
   }
-  $('qn').textContent = S.mode==='blitz' ? S.i+1 : `${S.i+1}/${S.total}`;
-  $('prog').style.width = S.mode==='blitz' ? '0' : (S.i/S.total*100)+'%';
+  $('qn').textContent = S.m.clock ? S.i+1 : `${S.i+1}/${S.total}`;
+  $('prog').style.width = S.m.clock ? '0' : (S.i/S.total*100)+'%';
 }
 
 function answer(btn){
   if (S.lock) return; S.lock = true; clearInterval(S.qtimer);
-  const r = S.cur, ok = !!btn && btn.dataset.v === S.correct;
-  [...$('opts').children].forEach(b => { b.disabled = true; if (b.dataset.v===S.correct) b.classList.add('ok'); });
+  const it = S.cur, r = it.rule, ok = !!btn && +btn.dataset.k === S.ans;
+  const timed = !!(S.m.per || S.m.clock);
+  [...$('opts').children].forEach((b,k) => { b.disabled = true; if (k===S.ans) b.classList.add('ok'); });
+  S.answered++;
   if (ok){
     S.score++; S.streak++; S.best = Math.max(S.best,S.streak);
     $('fb').textContent = ['Nice!','Correct!','Yes!','Got it!'][Math.floor(Math.random()*4)] + (S.streak>=3?` 🔥 ${S.streak} in a row`:'');
     $('fb').className = 'fb ok';
   } else {
     if (btn) btn.classList.add('bad'); S.streak = 0;
-    S.missed[r.n] = (S.missed[r.n]||0)+1;
-    S.queue.push({r, at:S.i+3});
-    if (S.mode==='blitz') S.time = Math.max(0, S.time-3);
-    $('fb').innerHTML = (btn ? '' : '⏰ Time’s up!<br>') + `Rule ${r.n}: ${D}${r.f} = <b>${r.d}</b><br>${r.tip}<div class="mn">🧠 ${M[r.n]}</div>`
-      + (S.mode==='blitz' ? '' : `<button class="big" id="nextBtn" onclick="next()">Next question → (${S.mode==='guided5' ? 5 : 10})</button>`)
-      // Full rule summary with the missed rule in red (guided mode highlights the on-screen table instead).
-      + (S.mode==='blitz' || guided() ? '' : `<details open class="sum"><summary>All 13 rules</summary>${rulesTable(r.n)}</details>`);
-    if (guided()) $('guide').innerHTML = rulesTable(r.n);
+    S.missed.set(r, (S.missed.get(r)||0) + 1);
+    S.queue.push({redo:it.redo, at:S.i+3});
+    if (S.m.clock){ S.time = Math.max(0, S.time-3); $('tm').textContent = S.time; }
+    $('fb').innerHTML = (btn ? '' : '⏰ Time’s up!<br>')
+      + (it.why ? `<div class="why">${esc(it.why)}</div>` : '')
+      + `${esc(ruleName(r))}: <b>${esc(ruleLine(r))}</b><br>${esc(r.tip)}<div class="mn">🧠 ${esc(r.mn)}</div>`
+      + `<button class="big" id="nextBtn" onclick="next()">Next question →${timed ? ` (${WAIT})` : ''}</button>`
+      // Rule summary with the missed rule in red. Modes with the rules on screen highlight that table instead.
+      + (S.m.sheet ? '' : `<details ${timed ? '' : 'open'} class="sum"><summary>All ${esc(r.set.code)} rules</summary><div class="tbl">${rulesTable(r.set, r)}</div></details>`);
+    if (S.m.sheet) $('guide').innerHTML = rulesTable(S.set, r);
     $('fb').className = 'fb bad';
   }
   $('sc').textContent = S.score; $('st').textContent = S.streak;
   S.i++;
-  // A wrong answer waits for "next" so there is time to read the hint (blitz keeps moving).
   if (ok) setTimeout(next, 650);
-  else if (S.mode==='blitz') setTimeout(next, 2500);
-  else {
-    // Wrong answer: the question timer is stopped; move on after 10 sec (5 sec in the 5-second mode), or sooner with the button.
-    S.wait = S.mode==='guided5' ? 5 : 10;
+  else if (timed){
+    // Timed modes: the clock stops. Move on after 10 seconds, or sooner with the button.
+    S.paused = true; S.wait = WAIT;
     S.wtimer = setInterval(() => {
       S.wait--;
       if ($('nextBtn')) $('nextBtn').textContent = `Next question → (${S.wait})`;
       if (S.wait <= 0) next();
     }, 1000);
   }
+  // Untimed modes: wait for "Next" so there is time to read the hint.
 }
 
 function finish(){
-  clearInterval(S.timer); clearInterval(S.qtimer); clearInterval(S.wtimer); S.i = Infinity; S.lock = true;
-  const n = S.mode==='blitz' ? S.score + Object.values(S.missed).reduce((a,b)=>a+b,0) : S.total;
+  stopTimers(); S.i = Infinity; S.lock = true;
+  const n = S.m.clock ? S.answered : S.total;
   const pct = n ? Math.round(S.score/n*100) : 0;
-  $('endTitle').textContent = S.mode==='blitz' ? `${S.score} correct in 60 sec` : `${S.score}/${S.total} (${pct}%)`;
-  const miss = Object.keys(S.missed).map(Number).sort((a,b)=>a-b);
+  const res = S.m.clock ? S.score : pct;
+  const key = `${S.setId}:${S.mode}`;
+  if (!S.opt.trig && !S.opt.total && (BEST[key]==null || res > BEST[key])){ BEST[key] = res; store.set('dd-best', BEST); }
+  $('endTitle').textContent = S.m.clock ? `${S.score} correct in ${S.m.clock} sec` : `${S.score}/${S.total} (${pct}%)`;
+  const miss = [...S.missed.entries()];
   $('endBody').innerHTML = `<p>Best streak: <b>${S.best}</b></p>` + (miss.length
-    ? `<p>Review these:</p><div class="missed">` + miss.map(k => { const r = R.find(x=>x.n===k); return `${k}. ${D}${r.f} = <b>${r.d}</b> <span style="color:var(--mute)">(missed ${S.missed[k]}×)</span>`; }).join('<br>') + '</div>'
+    ? `<p>Review these:</p><div class="missed">` + miss.map(([r,c]) => `${esc(ruleName(r))}: <b>${esc(ruleLine(r))}</b> <span style="color:var(--mute)">(missed ${c}×)</span>`).join('<br>') + '</div>'
     : '<p>No misses. You are ready. 🎉</p>');
   show('end');
 }
-function again(){ start(S.set, S.mode); }
-function quit(){ clearInterval(S.timer); clearInterval(S.qtimer); clearInterval(S.wtimer); S.i = Infinity; show('menu'); }
+function again(){ start(S.setId, S.mode, S.opt); }
+function quit(){ stopTimers(); S.i = Infinity; show('menu'); tab(TAB); }
 
 document.addEventListener('keydown', e => {
   if ($('game').classList.contains('hidden')) return;
@@ -260,10 +649,11 @@ document.addEventListener('keydown', e => {
   const k = parseInt(e.key); const b = $('opts').children[k-1];
   if (b && !S.lock) answer(b);
 });
-sheet();
+$('sheet').innerHTML = rulesTable(SETS.basic);
+tab(TAB);
 
 // Phones keep an old copy of the page for up to 10 minutes. Load the newest one if the version changed.
-const VERSION = '7';
+const VERSION = '8';
 $('ver').textContent = 'v' + VERSION;
 fetch(location.pathname + '?nc=' + Date.now(), {cache:'no-store'}).then(r => r.text()).then(t => {
   const m = t.match(/const VERSION = '(\d+)'/);
